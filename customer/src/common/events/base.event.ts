@@ -1,3 +1,4 @@
+import "..//..//common//extensions//date.extension";
 export abstract class BaseEvent {
 
     constructor() {
@@ -8,5 +9,5 @@ export abstract class BaseEvent {
     aggregateVersion: number;
     created: Date;
 
-    abstract name: string;
+    abstract eventName: string;
 }
