@@ -1,28 +1,33 @@
 import { Message } from "kafkajs";
+import { environment } from "../environment";
 import { errorMapped } from "../error-mapped";
+import { BaseEvent } from "../events/base.event";
 import { Result } from "../result";
 import { KafkaConnection } from "./kafka.connection";
-import { KafkaMessage, Notification } from "./kafka.message";
+import { KafkaMessage } from "./kafka.message";
 
 export class KafkaBus {
 
     constructor(public kafka: KafkaConnection) { }
 
-    async publishMessage(message: KafkaMessage, topic: string): Promise<Result> {
+    async publishMessage(event: BaseEvent): Promise<Result> {
 
         try {
 
-            const key = message.getEntityId();
-            const notification = this.getNotification(message);
-            var messageJson = JSON.stringify(notification);
+            const key = event.aggregateId;
+            const kafkaMessage = new KafkaMessage();
+            kafkaMessage.key = key;
+            kafkaMessage.name = event.eventName;
+            kafkaMessage.timestamp = event.created;
+            kafkaMessage.data = event;
 
             const producer = this.kafka.getConnection().producer();
             await producer.connect()
             await producer.send({
-                topic: topic,
+                topic: environment.topics.customer_events,
                 messages: [{
                     key: key,
-                    value: messageJson
+                    value: JSON.stringify(kafkaMessage)
                 }],
             });
             return Result.ok();
@@ -32,26 +37,29 @@ export class KafkaBus {
     }
 
 
-    async publishMessages(messages: KafkaMessage[], topic: string): Promise<Result> {
+    async publishMessages(messages: BaseEvent[]): Promise<Result> {
 
         try {
             const kafkaMessages = new Array<Message>();
+            
+            messages.forEach(event => {
+                const key = event.aggregateId;
+                const kafkaMessage = new KafkaMessage();
+                kafkaMessage.key = key;
+                kafkaMessage.name = event.eventName;
+                kafkaMessage.timestamp = event.created;
+                kafkaMessage.data = event;
 
-            messages.forEach(message => {
-                const key = message.getEntityId();
-                const notification = this.getNotification(message);
-                var messageJson = JSON.stringify(notification);
-                const kafkaMessage = {
+                kafkaMessages.push({
                     key: key,
-                    value: messageJson
-                };
-                kafkaMessages.push(kafkaMessage);
+                    value: JSON.stringify(kafkaMessage)
+                });
             });
 
             const producer = this.kafka.getConnection().producer();
             await producer.connect()
             await producer.send({
-                topic: topic,
+                topic: environment.topics.customer_events,
                 messages: kafkaMessages,
             });
 
@@ -59,17 +67,5 @@ export class KafkaBus {
         } catch (err) {
             return Result.fail2(errorMapped.kafka(err));
         }
-    }
-
-    private getNotification(message: KafkaMessage): Notification {
-        const notification = new Notification();
-
-        notification.companyKey = message.getCompanyKey();
-        notification.correlationId = message.getCorrelationId();
-        notification.entityId = message.getEntityId();
-        notification.name = message.getName();
-        notification.timestamp = message.getTimestamp();
-        notification.data = message;
-        return notification;
     }
 }
