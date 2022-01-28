@@ -1,6 +1,5 @@
 import { Customer } from "src/domain/entities/customer.entity";
 import { CustomerDto } from "src/dtos/customer.dto";
-
 export class Mapper {
 
     public static keyCustomerToCustomerDto = "CustomerToCustomerDto";

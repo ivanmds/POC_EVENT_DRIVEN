@@ -2,7 +2,9 @@ import { CustomerCreateCommand } from "src/dtos/commands/customer-create.command
 import { KafkaBus } from "src/common/kafka/kafka-bus";
 import { Customer } from "../entities/customer.entity";
 import { ResultData } from "src/common/result";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class CustomerService {
 
     constructor(
