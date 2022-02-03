@@ -16,7 +16,7 @@ export class CustomerService {
         private bus: KafkaBus,
         private mapper: Mapper) { }
 
-    async create(command: CustomerCreateCommand): Promise<ResultData<Customer>> {
+    public async create(command: CustomerCreateCommand): Promise<ResultData<Customer>> {
 
         const customer = Customer.create(command.name, command.motherName, command.birthDate);
 
@@ -29,7 +29,7 @@ export class CustomerService {
 
         const externalEvent = this.mapper.map(Mapper.customerToCustomerWasCreated, customer);
 
-        const kafkaResult = await this.bus.publishMessages(
+        const kafkaResult = await this.bus.publishMessage(
             process.env.TOPIC_EXTERNAL_EVENTS,
             externalEvent
         );
@@ -41,7 +41,34 @@ export class CustomerService {
         return ResultData.okWithData(customer);
     }
 
-    async setAddress(aggregateId: string, address: AddressDto) {
-        const customer = this.eventStore.get(aggregateId);
+    public async setAddress(aggregateId: string, addressDto: AddressDto): Promise<ResultData<Customer>> {
+        const result = await this.eventStore.get(aggregateId);
+
+        if(result.isFail()) {
+            return result;
+        }
+
+        const customer = result.getData();
+        const address = this.mapper.map(Mapper.addressDtoToAddress, addressDto);
+        customer.setAddress(address);
+
+        const saveResult = await this.eventStore.save(customer);
+        if (saveResult.isFail()) {
+            return ResultData.fail3(errorMapped.saveCustomerError());
+        }
+
+        
+        const externalEvent = this.mapper.map(Mapper.customerToCustomerWasUpdated, customer);
+
+        const kafkaResult = await this.bus.publishMessage(
+            process.env.TOPIC_EXTERNAL_EVENTS,
+            externalEvent
+        );
+
+        if (kafkaResult.isFail()) {
+            return ResultData.fail4(kafkaResult.getErrors());
+        }
+
+        return ResultData.okWithData(customer);
     }
 }

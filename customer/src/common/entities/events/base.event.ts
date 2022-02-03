@@ -1,4 +1,4 @@
-import "..//..//common//extensions//date.extension";
+import "../../extensions/date.extension";
 export abstract class BaseEvent {
 
     constructor() {

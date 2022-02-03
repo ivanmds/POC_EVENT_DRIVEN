@@ -1,6 +1,6 @@
 import { Db, MongoClient } from 'mongodb';
 import { errorMapped } from 'src/common/error-mapped';
-import { BaseEvent } from 'src/common/events/base.event';
+import { BaseEvent } from 'src/common/entities/events/base.event';
 import { Result, ResultData } from 'src/common/result';
 
 export abstract class EventStoreBaseRepository {

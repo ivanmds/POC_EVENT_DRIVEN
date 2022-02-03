@@ -1,7 +1,8 @@
 import { KafkaMessage } from "src/common/kafka/kafka.message";
+import { AddressDto } from "../address.dto";
 import { CustomerStatusTypeDto } from "../types/customer-status-type.dto";
 
-export class CustomerWasCreatedEvent implements KafkaMessage {
+export class CustomerWasUpdatedEvent implements KafkaMessage {
     
     public id: string;
     public name: string;
@@ -9,12 +10,14 @@ export class CustomerWasCreatedEvent implements KafkaMessage {
     public birthDate: Date;
     public status: CustomerStatusTypeDto;
 
+    public address: AddressDto;
+
     getKey(): string {
         return this.id;
     }
 
     getName(): string {
-        return CustomerWasCreatedEvent.externalEventName;
+       return CustomerWasUpdatedEvent.externalEventName;
     }
 
     static externalEventName : string = 'CUSTOMER_WAS_CREATED';

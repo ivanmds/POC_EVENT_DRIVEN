@@ -1,5 +1,5 @@
 import { AggregateRoot } from "src/common/entities/aggregate-root";
-import { BaseEvent } from "src/common/events/base.event";
+import { BaseEvent } from "src/common/entities/events/base.event";
 import { CustomerStatusType } from "../types/customer-status.type";
 import { Address } from "../valueObjects/address.vo";
 import { Contact } from "../valueObjects/contact.vo";

@@ -1,4 +1,4 @@
-import { BaseEvent } from "../events/base.event";
+import { BaseEvent } from "./events/base.event";
 
 export abstract class AggregateRoot {
 

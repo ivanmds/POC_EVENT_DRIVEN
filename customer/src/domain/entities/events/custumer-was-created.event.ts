@@ -1,4 +1,4 @@
-import { BaseEvent } from "src/common/events/base.event";
+import { BaseEvent } from "src/common/entities/events/base.event";
 export class CustomerWasCreated extends BaseEvent {
     
     eventName: string = CustomerWasCreated.getEventName();
