@@ -11,6 +11,7 @@ export abstract class AggregateRoot {
 
     id: string;
     created: Date;
+    updated: Date;
     version: number = 0;
 
     set setAggregateId(aggregateId: string) {
@@ -26,6 +27,7 @@ export abstract class AggregateRoot {
     applyEvent(event: BaseEvent) {
         this.apply(event);
         this.version = event.aggregateVersion;
+        this.updated = event.created;
     }
 
     protected upVersion = () => this.version++;

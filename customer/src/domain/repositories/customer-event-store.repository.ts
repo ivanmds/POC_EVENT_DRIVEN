@@ -17,9 +17,9 @@ export class CustomerEventStoreRepository extends EventStoreBaseRepository {
         return Result.ok();
     }
 
-    async get(aggregateId: string): Promise<ResultData<Customer>> {
+    async get(aggregateId: string, version?: number): Promise<ResultData<Customer>> {
 
-        const result = await this.getAllEvents(aggregateId);
+        const result = await this.getAllEvents(aggregateId, version);
         const customer = new Customer();
         
         if(result.isFail()) {

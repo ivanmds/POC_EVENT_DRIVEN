@@ -40,16 +40,22 @@ export abstract class EventStoreBaseRepository {
         }
     }
 
-    protected async getAllEvents(aggregateId: string): Promise<ResultData<BaseEvent[] | any[]>> {
+    protected async getAllEvents(aggregateId: string, version?: number): Promise<ResultData<BaseEvent[]>> {
         try {
+
+            if(version == null) {
+                version = Number.MAX_VALUE;
+            }
+
             const collection = this.database.collection(this.collectionName);
-            var filteredDocs = await collection.find({ aggregateId: aggregateId }).toArray();
+            
+            var events = await collection.find<BaseEvent>({ aggregateId: aggregateId, aggregateVersion: { $lte: version }}).toArray();
           
-            if (filteredDocs?.length == 0) {
+            if (events?.length == 0) {
                 return ResultData.fail3(errorMapped.notFound());
             }
 
-            return ResultData.okWithData(filteredDocs);
+            return ResultData.okWithData(events);
         } catch (error) {
             return ResultData.fail3(errorMapped.unknown(error));
         }

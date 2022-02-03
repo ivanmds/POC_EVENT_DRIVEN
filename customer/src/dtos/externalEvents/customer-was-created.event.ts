@@ -7,6 +7,7 @@ export class CustomerWasCreatedEvent implements KafkaMessage {
     public name: string;
     public motherName: string;
     public birthDate: Date;
+    public created: Date;
     public status: CustomerStatusTypeDto;
 
     getKey(): string {

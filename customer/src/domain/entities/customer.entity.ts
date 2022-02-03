@@ -8,13 +8,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { CustomerAddressWasAdded } from "./events/customer-address-was-added.event";
 import { CustomerAddressWasUpdated } from "./events/customer-address-was-updated.event";
 import { CustomerAddressBase } from "./events/customer-address-base.event";
+import { CustomerContactWasAdded } from "./events/customer-contact-was-added.event";
 export class Customer extends AggregateRoot {
 
     private _name: string;
     private _motherName: string;
     private _birthDate: Date;
-    private _contacts: Contact[];
-    private _address: Address;
+    private _contacts: Contact[] = null;
+    private _address: Address = null;
     private _status: CustomerStatusType
 
     public get getName() {
@@ -47,10 +48,12 @@ export class Customer extends AggregateRoot {
         } else if (event.eventName === CustomerAddressWasAdded.getEventName() ||
                    event.eventName === CustomerAddressWasUpdated.getEventName()) {
             this.applyCustomerAddressEvent(event as CustomerAddressBase);
+        } else if (event.eventName === CustomerContactWasAdded.getEventName()) {
+            this.applyCustomerContactWasAdded(event as CustomerContactWasAdded);
         }
     }
 
-    static create(
+    public static create(
         name: string,
         motherName: string,
         birthDate: Date
@@ -74,6 +77,7 @@ export class Customer extends AggregateRoot {
         this._motherName = event.motherName;
         this._birthDate = event.birthDate;
         this.setAggregateId = event.aggregateId;
+        this.created = event.created;
         this.setStatus();
     }
 
@@ -85,6 +89,21 @@ export class Customer extends AggregateRoot {
 
     private applyCustomerAddressEvent(event: CustomerAddressBase) {
         this._address = event.address;
+        this.setStatus();
+    }
+
+    public addContact(contact: Contact) {
+        const event = new CustomerContactWasAdded();
+        event.contact =  contact;
+        this.raiseEvent(event);
+    }
+
+    private applyCustomerContactWasAdded(event: CustomerContactWasAdded) {
+        if(this._contacts == null) {
+            this._contacts = [];
+        }
+
+        this._contacts.push(event.contact);
         this.setStatus();
     }
 
