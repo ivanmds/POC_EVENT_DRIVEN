@@ -23,7 +23,7 @@ export class CustomerController extends BaseController {
 
         if (result.isSuccess()) {
             const customer = result.getData();
-            return this.mapper.map(Mapper.keyCustomerToCustomerDto, customer);;
+            return this.mapper.map(Mapper.customerToCustomerDto, customer);;
         }
         else {
             this.httpCodeByError(result.getErrors());

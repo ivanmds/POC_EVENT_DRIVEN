@@ -3,7 +3,7 @@ import { BaseEvent } from "src/common/events/base.event";
 import { CustomerStatusType } from "../types/customer-status.type";
 import { Address } from "../valueObjects/address.vo";
 import { Contact } from "../valueObjects/contact.vo";
-import { CustomerWasCreatedEvent } from "./events/custumer-was-created.event";
+import { CustomerWasCreated } from "./events/custumer-was-created.event";
 import { v4 as uuidv4 } from 'uuid';
 import { CustomerAddressWasAdded } from "./events/customer-address-was-added.event";
 import { CustomerAddressWasUpdated } from "./events/customer-address-was-updated.event";
@@ -42,8 +42,8 @@ export class Customer extends AggregateRoot {
     }
 
     protected apply(event: BaseEvent) {
-        if (event.eventName === CustomerWasCreatedEvent.getEventName()) {
-            this.applyCustomerWasCreatedEvent(event as CustomerWasCreatedEvent);
+        if (event.eventName === CustomerWasCreated.getEventName()) {
+            this.applyCustomerWasCreatedEvent(event as CustomerWasCreated);
         } else if (event.eventName === CustomerAddressWasAdded.getEventName() ||
                    event.eventName === CustomerAddressWasUpdated.getEventName()) {
             this.applyCustomerAddressEvent(event as CustomerAddressBase);
@@ -56,7 +56,7 @@ export class Customer extends AggregateRoot {
         birthDate: Date
     ): Customer {
 
-        const customerWasCreated = new CustomerWasCreatedEvent();
+        const customerWasCreated = new CustomerWasCreated();
         customerWasCreated.name = name;
         customerWasCreated.motherName = motherName;
         customerWasCreated.birthDate = birthDate;
@@ -68,7 +68,7 @@ export class Customer extends AggregateRoot {
         return customer;
     }
 
-    private applyCustomerWasCreatedEvent(event: CustomerWasCreatedEvent) {
+    private applyCustomerWasCreatedEvent(event: CustomerWasCreated) {
         this._name = event.name;
         this._motherName = event.motherName;
         this._birthDate = event.birthDate;

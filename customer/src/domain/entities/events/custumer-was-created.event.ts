@@ -1,7 +1,7 @@
 import { BaseEvent } from "src/common/events/base.event";
-export class CustomerWasCreatedEvent extends BaseEvent {
+export class CustomerWasCreated extends BaseEvent {
     
-    eventName: string = CustomerWasCreatedEvent.getEventName();
+    eventName: string = CustomerWasCreated.getEventName();
 
     public name: string;
     public motherName: string;

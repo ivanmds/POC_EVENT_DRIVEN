@@ -6,13 +6,15 @@ import { CustomerEventStoreRepository } from "../repositories/customer-event-sto
 import { errorMapped } from "src/common/error-mapped";
 import { KafkaBus } from "src/common/kafka/kafka-bus";
 import { AddressDto } from "src/dtos/address.dto";
+import { Mapper } from "src/common/mappers/mapper";
 
 @Injectable()
 export class CustomerService {
 
     constructor(
         private eventStore: CustomerEventStoreRepository,
-        private bus: KafkaBus) { }
+        private bus: KafkaBus,
+        private mapper: Mapper) { }
 
     async create(command: CustomerCreateCommand): Promise<ResultData<Customer>> {
 
@@ -23,16 +25,18 @@ export class CustomerService {
             return ResultData.fail3(errorMapped.saveCustomerError());
         }
 
+        customer.clearUncommittedEvents();
+
+        const externalEvent = this.mapper.map(Mapper.customerToCustomerWasCreated, customer);
+
         const kafkaResult = await this.bus.publishMessages(
             process.env.TOPIC_EXTERNAL_EVENTS,
-            customer.getUncommittedEvents()
+            externalEvent
         );
 
         if (kafkaResult.isFail()) {
             return ResultData.fail4(kafkaResult.getErrors());
         }
-
-        customer.clearUncommittedEvents();
 
         return ResultData.okWithData(customer);
     }

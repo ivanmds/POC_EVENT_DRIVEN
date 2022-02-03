@@ -1,8 +1,6 @@
-import { Result } from "src/common/result";
+import { Result, ResultData } from "src/common/result";
 import { Customer } from "../entities/customer.entity";
 import { EventStoreBaseRepository } from "./event-store-base.repository";
-import { EventData } from "./data/event.data";
-import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
@@ -15,28 +13,24 @@ export class CustomerEventStoreRepository extends EventStoreBaseRepository {
     async save(customer: Customer): Promise<Result> {
 
         const events = customer.getUncommittedEvents();
-        const eventsData = new Array();
-
-        events.forEach((event) => {
-            const eventData = new EventData();
-            eventData.id = uuidv4();
-            eventData.created = event.created;
-            eventData.aggregatedId = event.aggregateId;
-            eventData.version = event.aggregateVersion;
-            eventData.name = event.eventName;
-            eventData.data = JSON.stringify(event);
-            eventsData.push(eventData);
-        });
-        
-        this.insertMany(eventsData);
+        this.insertMany(events);
         return Result.ok();
     }
 
-    async get(aggregatedId: string): Promise<Customer> {
-        const events = await this.getAll(aggregatedId);
+    async get(aggregateId: string): Promise<ResultData<Customer>> {
+
+        const result = await this.getAllEvents(aggregateId);
         const customer = new Customer();
         
+        if(result.isFail()) {
+            return ResultData.fail4(result.getErrors());
+        }
+        
+        const events = result.getData();
+        events.forEach((event) => {
+            customer.applyEvent(event);
+        });
 
-        return customer;
+        return ResultData.okWithData(customer);
     }
 }
