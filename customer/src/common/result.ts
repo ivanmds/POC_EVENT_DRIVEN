@@ -3,6 +3,7 @@ export class Result {
     protected errors = new Array<MessageError>();
 
     isSuccess = () => this.errors.length == 0;
+    isFail = () => this.isSuccess() == false;
 
     appendError(code: string, message: string, error?: Error) {
         const msgError = new MessageError(code, message, error);

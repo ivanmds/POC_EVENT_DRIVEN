@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { Kafka, Message } from "kafkajs";
-import { environment } from "../environment";
 import { errorMapped } from "../error-mapped";
 import { BaseEvent } from "../events/base.event";
 import { Result } from "../result";
@@ -9,7 +8,7 @@ import { KafkaMessage } from "./kafka.message";
 @Injectable()
 export class KafkaBus {
 
-    async publishMessage(event: BaseEvent): Promise<Result> {
+    async publishMessage(topicName: string, event: BaseEvent): Promise<Result> {
 
         try {
             const key = event.aggregateId;
@@ -26,7 +25,7 @@ export class KafkaBus {
             const producer = kafka.producer();
             await producer.connect()
             await producer.send({
-                topic: environment.topics.customer_events,
+                topic: topicName,
                 messages: [{
                     key: key,
                     value: JSON.stringify(kafkaMessage)
@@ -39,7 +38,7 @@ export class KafkaBus {
     }
 
 
-    async publishMessages(messages: BaseEvent[]): Promise<Result> {
+    async publishMessages(topicName: string, messages: BaseEvent[]): Promise<Result> {
 
         try {
             const kafkaMessages = new Array<Message>();
@@ -64,8 +63,8 @@ export class KafkaBus {
             });
             const producer = kafka.producer();
             await producer.connect()
-            const result = await producer.send({
-                topic: environment.topics.customer_events,
+            await producer.send({
+                topic: topicName,
                 messages: kafkaMessages,
             });
 
