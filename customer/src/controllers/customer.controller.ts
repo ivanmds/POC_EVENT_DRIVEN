@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from "@nestjs/common";
-import { ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { BaseController } from "src/common/controllers/base.controller";
 import { Mapper } from "src/common/mappers/mapper";
 import { MessageError } from "src/common/result";
@@ -9,6 +9,7 @@ import { CustomerPutAddressCommand } from "src/dtos/commands/customer-put-addres
 import { CustomerPutContactCommand } from "src/dtos/commands/customer-put-contact.command";
 import { CustomerDto } from "src/dtos/customer.dto";
 
+@ApiTags("customers")
 @Controller("api/v1/customers")
 export class CustomerController extends BaseController {
 
