@@ -69,9 +69,11 @@ export class Customer extends AggregateRoot {
     }
 
     private applyCustomerWasCreatedEvent(event: CustomerWasCreated) {
+
         this._name = event.name;
         this._motherName = event.motherName;
         this._birthDate = event.birthDate;
+        this.setAggregateId = event.aggregateId;
         this.setStatus();
     }
 

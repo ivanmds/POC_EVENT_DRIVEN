@@ -33,6 +33,7 @@ export class Mapper {
         dto.name = customer.getName;
         dto.motherName = customer.getMotherName;
         dto.birthDate = customer.getBirthDate;
+        dto.address = this.mapAddressToAddressDto(customer.getAddress);
 
         return dto;
     }

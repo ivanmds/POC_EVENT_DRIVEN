@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { AddressDto } from "./address.dto";
 
 export class CustomerDto {
     @ApiProperty()
@@ -12,4 +13,7 @@ export class CustomerDto {
 
     @ApiProperty()
     birthDate: Date;
+
+    @ApiProperty()
+    address: AddressDto;
 }

@@ -43,8 +43,8 @@ export abstract class EventStoreBaseRepository {
     protected async getAllEvents(aggregateId: string): Promise<ResultData<BaseEvent[] | any[]>> {
         try {
             const collection = this.database.collection(this.collectionName);
-            const filteredDocs = await collection.find({ aggregateId: aggregateId }).toArray();
-
+            var filteredDocs = await collection.find({ aggregateId: aggregateId }).toArray();
+          
             if (filteredDocs?.length == 0) {
                 return ResultData.fail3(errorMapped.notFound());
             }
