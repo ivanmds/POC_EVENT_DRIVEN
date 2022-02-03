@@ -5,6 +5,7 @@ import { Injectable } from "@nestjs/common";
 import { CustomerEventStoreRepository } from "../repositories/customer-event-store.repository";
 import { errorMapped } from "src/common/error-mapped";
 import { KafkaBus } from "src/common/kafka/kafka-bus";
+import { AddressDto } from "src/dtos/address.dto";
 
 @Injectable()
 export class CustomerService {
@@ -34,5 +35,9 @@ export class CustomerService {
         customer.clearUncommittedEvents();
 
         return ResultData.okWithData(customer);
+    }
+
+    async setAddress(aggregateId: string, address: AddressDto) {
+        const customer = this.eventStore.get(aggregateId);
     }
 }

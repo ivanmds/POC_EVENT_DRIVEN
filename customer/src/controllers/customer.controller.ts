@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
 import { BaseController } from "src/common/controllers/base.controller";
 import { Mapper } from "src/common/mappers/mapper";
@@ -28,5 +28,11 @@ export class CustomerController extends BaseController {
         else {
             this.httpCodeByError(result.getErrors());
         }
+    }
+
+    @Get(':customerId')
+    async get(@Param('customerId') customerId: string) {
+
+        await this.customerService.setAddress(customerId, null)
     }
 }

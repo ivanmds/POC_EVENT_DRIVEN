@@ -1,12 +1,12 @@
 import { Result } from "src/common/result";
 import { Customer } from "../entities/customer.entity";
-import { BaseRepository } from "./base.repository";
+import { EventStoreBaseRepository } from "./event-store-base.repository";
 import { EventData } from "./data/event.data";
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class CustomerEventStoreRepository extends BaseRepository {
+export class CustomerEventStoreRepository extends EventStoreBaseRepository {
 
     constructor() {
         super('customerEvents');
@@ -30,5 +30,13 @@ export class CustomerEventStoreRepository extends BaseRepository {
         
         this.insertMany(eventsData);
         return Result.ok();
+    }
+
+    async get(aggregatedId: string): Promise<Customer> {
+        const events = await this.getAll(aggregatedId);
+        const customer = new Customer();
+        
+
+        return customer;
     }
 }

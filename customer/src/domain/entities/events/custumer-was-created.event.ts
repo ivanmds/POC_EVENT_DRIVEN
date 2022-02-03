@@ -1,6 +1,4 @@
 import { BaseEvent } from "src/common/events/base.event";
-import { CustomerStatusType } from "src/domain/types/customer-status.type";
-
 export class CustomerWasCreatedEvent extends BaseEvent {
     
     eventName: string = CustomerWasCreatedEvent.getEventName();
@@ -8,7 +6,6 @@ export class CustomerWasCreatedEvent extends BaseEvent {
     public name: string;
     public motherName: string;
     public birthDate: Date;
-    public status = CustomerStatusType.Simple;
 
     static getEventName = () => "CUSTOMER_WAS_CREATED";
 }

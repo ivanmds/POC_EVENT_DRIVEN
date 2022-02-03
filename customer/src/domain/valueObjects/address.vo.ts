@@ -6,7 +6,7 @@ export class Address {
         private zipCode: string,
         private city: string,
         private state: string,
-        private complement: string,
+        private complement: string
     ) { }
 
     public get getAddress() {

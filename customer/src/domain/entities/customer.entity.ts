@@ -5,6 +5,9 @@ import { Address } from "../valueObjects/address.vo";
 import { Contact } from "../valueObjects/contact.vo";
 import { CustomerWasCreatedEvent } from "./events/custumer-was-created.event";
 import { v4 as uuidv4 } from 'uuid';
+import { CustomerAddressWasAdded } from "./events/customer-address-was-added.event";
+import { CustomerAddressWasUpdated } from "./events/customer-address-was-updated.event";
+import { CustomerAddressBase } from "./events/customer-address-base.event";
 export class Customer extends AggregateRoot {
 
     private _name: string;
@@ -41,14 +44,10 @@ export class Customer extends AggregateRoot {
     protected apply(event: BaseEvent) {
         if (event.eventName === CustomerWasCreatedEvent.getEventName()) {
             this.applyCustomerWasCreatedEvent(event as CustomerWasCreatedEvent);
+        } else if (event.eventName === CustomerAddressWasAdded.getEventName() ||
+                   event.eventName === CustomerAddressWasUpdated.getEventName()) {
+            this.applyCustomerAddressEvent(event as CustomerAddressBase);
         }
-    }
-
-    private applyCustomerWasCreatedEvent(event: CustomerWasCreatedEvent) {
-        this._name = event.name;
-        this._motherName = event.motherName;
-        this._birthDate = event.birthDate;
-        this._status = event.status;
     }
 
     static create(
@@ -67,5 +66,33 @@ export class Customer extends AggregateRoot {
         customer.raiseEvent(customerWasCreated);
 
         return customer;
+    }
+
+    private applyCustomerWasCreatedEvent(event: CustomerWasCreatedEvent) {
+        this._name = event.name;
+        this._motherName = event.motherName;
+        this._birthDate = event.birthDate;
+        this.setStatus();
+    }
+
+    public setAddress(address: Address) {
+        const event = this._address == null ? new CustomerAddressWasAdded() : new CustomerAddressWasUpdated();
+        event.address = address;
+        this.raiseEvent(event);
+    }
+
+    private applyCustomerAddressEvent(event: CustomerAddressBase) {
+        this._address = event.address;
+        this.setStatus();
+    }
+
+    private setStatus() {
+        if(this._contacts == null && this._address == null) {
+            this._status = CustomerStatusType.Simple;
+        } else if(this._contacts != null && this._address != null) {
+            this._status = CustomerStatusType.Complete;
+        } else {
+            this._status = CustomerStatusType.Partial;
+        }
     }
 }
