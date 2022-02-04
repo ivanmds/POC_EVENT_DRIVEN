@@ -24,5 +24,5 @@ export class CustomerWasUpdatedEvent implements KafkaMessage {
        return CustomerWasUpdatedEvent.externalEventName;
     }
 
-    static externalEventName : string = 'CUSTOMER_WAS_CREATED';
+    static externalEventName : string = 'CUSTOMER_WAS_UPDATED';
 }

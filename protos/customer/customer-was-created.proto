@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "customer-status-type.proto";
+
+message CustomerWasCreated {
+    string id = 1;
+    string name = 2;
+    string motherName = 3;
+    Date birthDate = 4;
+    Date created = 5;
+    CustomerStatusType status = 6
+}

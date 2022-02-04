@@ -3,6 +3,7 @@ import { Kafka } from "kafkajs";
 import { errorMapped } from "../error-mapped";
 import { Result } from "../result";
 import { KafkaMessage, Notification } from "./kafka.message";
+import { Buffer } from 'buffer';
 
 @Injectable()
 export class KafkaBus {
@@ -18,15 +19,17 @@ export class KafkaBus {
 
             const kafka = new Kafka({
                 brokers: [process.env.KAFKA_BROKER],
-                clientId: 'api-customer'
+                clientId: 'api-customer',
             });
+            const buffer = Buffer.from(JSON.stringify(kafkaMessage));
+
             const producer = kafka.producer();
             await producer.connect()
             await producer.send({
                 topic: topicName,
                 messages: [{
-                    key: key,
-                    value: JSON.stringify(kafkaMessage)
+                    key: Buffer.from(key),
+                    value: buffer
                 }],
             });
             return Result.ok();
