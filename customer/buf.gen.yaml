@@ -1,0 +1,6 @@
+version: v1
+plugins:
+  - name: ts
+    out: ../gen/ts
+    strategy: all
+    path: ../protos/customer/customer-was-created.proto

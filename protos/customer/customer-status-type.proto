@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-enum CustomerStatusType {
-    Simple = 1;
-    Partial = 2;
-    Complete = 3;
-}
