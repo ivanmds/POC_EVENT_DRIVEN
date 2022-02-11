@@ -8,7 +8,7 @@ namespace Antifraud.Api.Consumers
         public CustomerWasCreatedCunsumer(IServiceProvider services)
             : base(services, "customer_external_events") { }
 
-        public override async Task Consume(Notification<CustomerWasCreated> notification)
+        public override async Task Consume(CustomerWasCreated @event)
         {
            
         }

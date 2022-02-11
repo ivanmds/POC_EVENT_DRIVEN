@@ -39,7 +39,7 @@ export class Mapper {
         dto.id = customer.id;
         dto.name = customer.getName;
         dto.motherName = customer.getMotherName;
-        dto.birthDate = customer.getBirthDate;
+        dto.birthDate = new Date(customer.getBirthDate);
         dto.status = CustomerStatusTypeDto[customer.getStatus.toString()];
         dto.version = customer.version;
         dto.created = customer.created;
@@ -60,9 +60,9 @@ export class Mapper {
         const event = new CustomerWasCreatedEvent();
         event.id = customer.id;
         event.name = customer.getName;
-        event.birthDate = customer.getBirthDate;
         event.motherName = customer.getMotherName;
-        event.created = customer.created;
+        event.birthDate = { seconds: (new Date(customer.getBirthDate).getTime() / 1000) };
+        event.created = { seconds: (customer.created.getTime() / 1000 )};
         event.status = CustomerStatusTypeDto[customer.getStatus.toString()];
 
         return event;

@@ -44,12 +44,10 @@ namespace Antifraud.Api.Consumers
                     while (!stoppingToken.IsCancellationRequested)
                     {
                         var result = consumer.Consume(stoppingToken);
-                        var msg = new Notification<TMessage>();
-                        msg.Key = result.Message.Key;
-                        msg.Timestamp = result.Message.Timestamp;
+                        
                         var msgBody = result.Message.Value;
-                        msg.Data = JsonConvert.DeserializeObject<TMessage>(msgBody);
-                        await Consume(msg);
+                        var @event = JsonConvert.DeserializeObject<TMessage>(msgBody);
+                        await Consume(@event);
                     }
                 });
             }
@@ -64,7 +62,7 @@ namespace Antifraud.Api.Consumers
             base.Dispose();
         }
 
-        public abstract Task Consume(Notification<TMessage> notification);
+        public abstract Task Consume(TMessage message);
     }
 
     public class Notification<TMessage>

@@ -1,14 +1,14 @@
 import { KafkaMessage } from "src/common/kafka/kafka.message";
-import { CustomerStatusTypeDto } from "../types/customer-status-type.dto";
+import { CustomerWasCreated, google, CustomerStatusType } from "./customer-was-created";
 
-export class CustomerWasCreatedEvent implements KafkaMessage {
+export class CustomerWasCreatedEvent implements KafkaMessage, CustomerWasCreated {
     
     public id: string;
     public name: string;
     public motherName: string;
-    public birthDate: Date;
-    public created: Date;
-    public status: CustomerStatusTypeDto;
+    public birthDate: google.protobuf.Timestamp;
+    public created: google.protobuf.Timestamp;
+    public status: CustomerStatusType;
 
     getKey(): string {
         return this.id;
