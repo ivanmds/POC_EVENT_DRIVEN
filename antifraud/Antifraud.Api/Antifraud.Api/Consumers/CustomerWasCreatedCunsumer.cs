@@ -1,16 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Antifraud.Api.Kafka;
 
 namespace Antifraud.Api.Consumers
 {
-    public class CustomerWasCreatedCunsumer : ConsumerBase<CustomerWasCreated>
+    public class CustomerWasCreatedCunsumer : IConsumer<CustomerWasCreated>
     {
-        public CustomerWasCreatedCunsumer(IServiceProvider services)
-            : base(services, "customer_external_events") { }
-
-        public override async Task Consume(CustomerWasCreated @event)
+        public void Consume(CustomerWasCreated message)
         {
-           
+            
         }
     }
 }

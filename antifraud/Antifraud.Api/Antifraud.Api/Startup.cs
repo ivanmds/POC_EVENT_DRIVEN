@@ -1,4 +1,5 @@
 using Antifraud.Api.Consumers;
+using Antifraud.Api.Kafka;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,14 @@ namespace Antifraud.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Antifraud.Api", Version = "v1" });
             });
 
-            services.AddHostedService<CustomerWasCreatedCunsumer>();
+            services.AddConsumer<CustomerWasCreated, CustomerWasCreatedCunsumer>(
+                new KafkaConsumerConfig
+                {
+                    GroupId = "antifraud-consumers",
+                    ConnectionString = "localhost:9092",
+                    TopicName = "customer_external_events",
+                    EventName = "CUSTOMER_WAS_CREATED"
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

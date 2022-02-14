@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Kafka } from "kafkajs";
 import { errorMapped } from "../error-mapped";
 import { Result } from "../result";
-import { KafkaMessage, Notification } from "./kafka.message";
+import { KafkaMessage } from "./kafka.message";
 
 @Injectable()
 export class KafkaBus {
