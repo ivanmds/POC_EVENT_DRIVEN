@@ -8,6 +8,9 @@ export class CustomerDto {
     id: string;
 
     @ApiProperty()
+    documentNumber: string;
+
+    @ApiProperty()
     name: string;
 
     @ApiProperty()

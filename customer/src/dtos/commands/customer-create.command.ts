@@ -11,6 +11,11 @@ export class CustomerCreateCommand {
     @ApiProperty()
     @IsString()
     @IsDefined()
+    documentNumber: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsDefined()
     motherName: string;
 
     @ApiProperty()

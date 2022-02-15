@@ -37,6 +37,7 @@ export class Mapper {
     private mapCustomerToCustomerDto(customer: Customer): CustomerDto {
         const dto = new CustomerDto();
         dto.id = customer.id;
+        dto.documentNumber = customer.getDocumentNumber;
         dto.name = customer.getName;
         dto.motherName = customer.getMotherName;
         dto.birthDate = new Date(customer.getBirthDate);
@@ -59,6 +60,7 @@ export class Mapper {
     private mapCustomerToCustomerWasCreated(customer: Customer): CustomerWasCreatedEvent {
         const event = new CustomerWasCreatedEvent();
         event.id = customer.id;
+        event.documentNumber = customer.getDocumentNumber;
         event.name = customer.getName;
         event.motherName = customer.getMotherName;
         event.birthDate = { seconds: (new Date(customer.getBirthDate).getTime() / 1000) };
@@ -71,6 +73,7 @@ export class Mapper {
     private mapCustomerToCustomerWasUpdated(customer: Customer): CustomerWasUpdatedEvent {
         const event = new CustomerWasUpdatedEvent();
         event.id = customer.id;
+        event.documentNumber = customer.getDocumentNumber;
         event.name = customer.getName;
         event.birthDate = customer.getBirthDate;
         event.motherName = customer.getMotherName;

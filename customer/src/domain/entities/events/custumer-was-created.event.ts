@@ -3,6 +3,7 @@ export class CustomerWasCreated extends BaseEvent {
     
     eventName: string = CustomerWasCreated.getEventName();
 
+    public documentNumber: string;
     public name: string;
     public motherName: string;
     public birthDate: Date;

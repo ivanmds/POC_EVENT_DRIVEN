@@ -1,5 +1,6 @@
 export interface CustomerWasCreated {
     id?: string;
+    documentNumber?:string;
     name?: string;
     motherName?: string;
     birthDate?: google.protobuf.Timestamp;

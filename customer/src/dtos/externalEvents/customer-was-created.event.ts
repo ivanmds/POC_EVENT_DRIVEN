@@ -4,6 +4,7 @@ import { CustomerWasCreated, google, CustomerStatusType } from "./customer-was-c
 export class CustomerWasCreatedEvent implements KafkaMessage, CustomerWasCreated {
     
     public id: string;
+    public documentNumber: string;
     public name: string;
     public motherName: string;
     public birthDate: google.protobuf.Timestamp;

@@ -11,12 +11,17 @@ import { CustomerAddressBase } from "./events/customer-address-base.event";
 import { CustomerContactWasAdded } from "./events/customer-contact-was-added.event";
 export class Customer extends AggregateRoot {
 
+    private _documentNumber: string;
     private _name: string;
     private _motherName: string;
     private _birthDate: Date;
     private _contacts: Contact[] = null;
     private _address: Address = null;
     private _status: CustomerStatusType
+
+    public get getDocumentNumber() {
+        return this._documentNumber;
+    }
 
     public get getName() {
         return this._name;
@@ -73,6 +78,7 @@ export class Customer extends AggregateRoot {
 
     private applyCustomerWasCreatedEvent(event: CustomerWasCreated) {
 
+        this._documentNumber = event.documentNumber;
         this._name = event.name;
         this._motherName = event.motherName;
         this._birthDate = event.birthDate;

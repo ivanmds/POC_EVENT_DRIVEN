@@ -6,6 +6,7 @@ import { CustomerStatusTypeDto } from "../types/customer-status-type.dto";
 export class CustomerWasUpdatedEvent implements KafkaMessage {
     
     public id: string;
+    public documentNumber: string;
     public name: string;
     public motherName: string;
     public birthDate: Date;
