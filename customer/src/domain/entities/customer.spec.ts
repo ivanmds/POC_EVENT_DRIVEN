@@ -12,11 +12,13 @@ describe('Customer', () => {
     describe('create', () => {
 
         it('customer should be created', () => {
+            const documentNumber = faker.getString();
             const name = faker.getString();
             const motherName = faker.getString();
             const birthDate = faker.getDate();
 
             const customer = Customer.create(
+                documentNumber,
                 name,
                 motherName,
                 birthDate
@@ -29,7 +31,8 @@ describe('Customer', () => {
             expect(customer.getStatus).toEqual(CustomerStatusType.Simple);
         });
 
-        it('customer should be add address',  () => {
+        it('customer should be add address', () => {
+            const documentNumber = faker.getString();
             const name = faker.getString();
             const motherName = faker.getString();
             const birthDate = faker.getDate();
@@ -37,19 +40,21 @@ describe('Customer', () => {
             const address = new Address(any, any, any, any, any, any, any);
 
             const customer = Customer.create(
+                documentNumber,
                 name,
                 motherName,
                 birthDate
             );
             customer.clearUncommittedEvents();
-            
+
             customer.setAddress(address);
             const event = customer.getUncommittedEvents()[0];
             expect(event.eventName).toEqual(CustomerAddressWasAdded.getEventName());
             expect(customer.getStatus).toEqual(CustomerStatusType.Partial);
         });
 
-        it('customer should be updated',  () => {
+        it('customer should be updated', () => {
+            const documentNumber = faker.getString();
             const name = faker.getString();
             const motherName = faker.getString();
             const birthDate = faker.getDate();
@@ -57,11 +62,12 @@ describe('Customer', () => {
             const address = new Address(any, any, any, any, any, any, any);
 
             const customer = Customer.create(
+                documentNumber,
                 name,
                 motherName,
                 birthDate
             );
-           
+
             customer.setAddress(address);
             customer.clearUncommittedEvents();
 

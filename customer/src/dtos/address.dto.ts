@@ -6,7 +6,7 @@ export class AddressDto {
     @ApiProperty()
     @IsString()
     @IsDefined()
-    address: string;
+    street: string;
 
     @ApiProperty()
     @IsString()

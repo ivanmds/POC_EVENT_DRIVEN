@@ -1,21 +1,20 @@
 import { KafkaMessage } from "src/common/kafka/kafka.message";
 import { AddressDto } from "../address.dto";
-import { ContactDto } from "../contact.dto";
-import { CustomerStatusTypeDto } from "../types/customer-status-type.dto";
+import { CustomerWasUpdated, google, CustomerStatusType, Contract } from "./customer-was-updated";
 
-export class CustomerWasUpdatedEvent implements KafkaMessage {
+export class CustomerWasUpdatedEvent implements KafkaMessage, CustomerWasUpdated {
     
     public id: string;
     public documentNumber: string;
     public name: string;
     public motherName: string;
-    public birthDate: Date;
-    public status: CustomerStatusTypeDto;
-    public created: Date;
-    public updated: Date;
+    public birthDate: google.protobuf.Timestamp;
+    public status: CustomerStatusType;
+    public created: google.protobuf.Timestamp;
+    public updated: google.protobuf.Timestamp;
 
     public address: AddressDto;
-    public contacts: ContactDto[];
+    public contacts: Contract[];
 
     getKey(): string {
         return this.id;

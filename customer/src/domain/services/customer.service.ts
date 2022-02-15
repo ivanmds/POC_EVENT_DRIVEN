@@ -30,7 +30,7 @@ export class CustomerService {
 
     public async create(command: CustomerCreateCommand): Promise<ResultData<Customer>> {
 
-        const customer = Customer.create(command.name, command.motherName, command.birthDate);
+        const customer = Customer.create(command.documentNumber, command.name, command.motherName, command.birthDate);
 
         const result = await this.eventStore.save(customer);
         if (result.isFail()) {

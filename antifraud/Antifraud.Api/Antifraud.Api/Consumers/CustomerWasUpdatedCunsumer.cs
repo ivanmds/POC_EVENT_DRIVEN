@@ -4,22 +4,21 @@ using Antifraud.Api.Repositories;
 
 namespace Antifraud.Api.Consumers
 {
-    public class CustomerWasCreatedCunsumer : IConsumer<CustomerWasCreated>
+    public class CustomerWasUpdatedCunsumer : IConsumer<CustomerWasUpdated>
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
 
-        public CustomerWasCreatedCunsumer(ICustomerRepository customerRepository, IMapper mapper)
+        public CustomerWasUpdatedCunsumer(ICustomerRepository customerRepository, IMapper mapper)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
         }
 
-
-        public void Consume(CustomerWasCreated message)
+        public void Consume(CustomerWasUpdated message)
         {
             var customer = _mapper.Map(message);
-            _customerRepository.InsertOne(customer);
+            _customerRepository.ReplaceOne(customer);
         }
     }
 }

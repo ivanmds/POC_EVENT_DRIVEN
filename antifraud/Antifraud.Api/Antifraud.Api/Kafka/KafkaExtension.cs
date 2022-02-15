@@ -6,13 +6,13 @@ namespace Antifraud.Api.Kafka
 {
     public static class KafkaExtension
     {
-        private static Dictionary<string, Types> dictConsumers = new Dictionary<string, Types>();
+        private static Dictionary<string, ConsumerConfiguration> dictConsumers = new Dictionary<string, ConsumerConfiguration>();
 
         public static void AddConsumer<TMessage, TConsumer>(this IServiceCollection services, KafkaConsumerConfig config)
         {
             var consumerType = typeof(TConsumer);
             var messageType = typeof(TMessage);
-            dictConsumers.Add(config.EventName, new Types { Consumer = consumerType, Message = messageType });
+            dictConsumers.Add(config.EventName, new ConsumerConfiguration { Consumer = consumerType, Message = messageType });
 
             var kafKaDictConsumer = new KafkaDictConsumers(dictConsumers);
             services.AddSingleton(kafKaDictConsumer);

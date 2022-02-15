@@ -1,11 +1,14 @@
 using Antifraud.Api.Consumers;
 using Antifraud.Api.Kafka;
+using Antifraud.Api.Mapping;
+using Antifraud.Api.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 
 namespace Antifraud.Api
 {
@@ -35,6 +38,21 @@ namespace Antifraud.Api
                     TopicName = "customer_external_events",
                     EventName = "CUSTOMER_WAS_CREATED"
                 });
+
+            services.AddConsumer<CustomerWasUpdated, CustomerWasUpdatedCunsumer>(
+                new KafkaConsumerConfig
+                {
+                    GroupId = "antifraud-consumers",
+                    ConnectionString = "localhost:9092",
+                    TopicName = "customer_external_events",
+                    EventName = "CUSTOMER_WAS_UPDATED"
+                });
+
+
+            var client = new MongoClient("mongodb://user:pwd@localhost:27017/admin");
+            services.AddSingleton((IMongoClient)client);
+            services.AddSingleton<IMapper, Mapper>();
+            services.AddSingleton<ICustomerRepository, CustomerRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

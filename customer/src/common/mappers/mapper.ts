@@ -64,7 +64,7 @@ export class Mapper {
         event.name = customer.getName;
         event.motherName = customer.getMotherName;
         event.birthDate = { seconds: (new Date(customer.getBirthDate).getTime() / 1000) };
-        event.created = { seconds: (customer.created.getTime() / 1000 )};
+        event.created = { seconds: (customer.created.getTime() / 1000) };
         event.status = CustomerStatusTypeDto[customer.getStatus.toString()];
 
         return event;
@@ -75,18 +75,18 @@ export class Mapper {
         event.id = customer.id;
         event.documentNumber = customer.getDocumentNumber;
         event.name = customer.getName;
-        event.birthDate = customer.getBirthDate;
+        event.birthDate = { seconds: (new Date(customer.getBirthDate).getTime() / 1000) };
         event.motherName = customer.getMotherName;
         event.status = CustomerStatusTypeDto[customer.getStatus.toString()];
-        event.created = customer.created;
-        event.updated = customer.updated;
+        event.created = { seconds: (new Date(customer.created).getTime() / 1000) };
+        event.updated = { seconds: (new Date(customer.updated).getTime() / 1000) };
 
         if (customer.getAddress != null) {
             event.address = this.mapAddressToAddressDto(customer.getAddress);
         }
 
         if (customer.getContacts != null) {
-            event.contacts = this.mapContactsToContactsDto(customer.getContacts);
+            event.contacts = customer.getContacts;
         }
 
         return event;
@@ -94,7 +94,7 @@ export class Mapper {
 
     private mapAddressDtoToAddress(dto: AddressDto): Address {
         return new Address(
-            dto.address,
+            dto.street,
             dto.number,
             dto.neighborhood,
             dto.zipCode,
@@ -107,7 +107,7 @@ export class Mapper {
 
     private mapAddressToAddressDto(address: Address): AddressDto {
         const dto = new AddressDto();
-        dto.address = address.address;
+        dto.street = address.street;
         dto.city = address.city;
         dto.complement = address.complement;
         dto.neighborhood = address.neighborhood;

@@ -3,8 +3,8 @@ import { BaseEvent } from "src/common/entities/events/base.event";
 import { CustomerStatusType } from "../types/customer-status.type";
 import { Address } from "../valueObjects/address.vo";
 import { Contact } from "../valueObjects/contact.vo";
-import { CustomerWasCreated } from "./events/custumer-was-created.event";
 import { v4 as uuidv4 } from 'uuid';
+import { CustomerWasCreated } from "./events/custumer-was-created.event";
 import { CustomerAddressWasAdded } from "./events/customer-address-was-added.event";
 import { CustomerAddressWasUpdated } from "./events/customer-address-was-updated.event";
 import { CustomerAddressBase } from "./events/customer-address-base.event";
@@ -59,12 +59,14 @@ export class Customer extends AggregateRoot {
     }
 
     public static create(
+        documentNumber: string,
         name: string,
         motherName: string,
         birthDate: Date
     ): Customer {
 
         const customerWasCreated = new CustomerWasCreated();
+        customerWasCreated.documentNumber = documentNumber;
         customerWasCreated.name = name;
         customerWasCreated.motherName = motherName;
         customerWasCreated.birthDate = birthDate;

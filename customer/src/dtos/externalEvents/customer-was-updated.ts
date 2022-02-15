@@ -1,4 +1,4 @@
-export interface CustomerWasCreated {
+export interface CustomerWasUpdated {
     id?: string;
     documentNumber?: string;
     name?: string;
@@ -6,6 +6,26 @@ export interface CustomerWasCreated {
     birthDate?: google.protobuf.Timestamp;
     created?: google.protobuf.Timestamp;
     status?: CustomerStatusType;
+    updated?: google.protobuf.Timestamp;
+    address?: Address;
+    contacts?: Contract[];
+}
+export interface Address {
+    street?: string;
+    number?: string;
+    neighborhood?: string;
+    zipCode?: string;
+    city?: string;
+    state?: string;
+    complement?: string;
+}
+export interface Contract {
+    value?: string;
+    type?: ContactType;
+}
+export enum ContactType {
+    Email = 0,
+    Phone = 1,
 }
 export enum CustomerStatusType {
     None = 0,

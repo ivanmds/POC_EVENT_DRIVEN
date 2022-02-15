@@ -5,22 +5,23 @@ namespace Antifraud.Api.Kafka
 {
     public class KafkaDictConsumers
     {
-        private Dictionary<string, Types> DictConsumers { get; set; }
+        private Dictionary<string, ConsumerConfiguration> ConsumerConfigurations { get; set; }
 
-        public KafkaDictConsumers(Dictionary<string, Types> dictConsumers)
+        public KafkaDictConsumers(Dictionary<string, ConsumerConfiguration> configurations)
         {
-            this.DictConsumers = dictConsumers;
+            this.ConsumerConfigurations = configurations;
         }
 
-        public Types GetConsumerType(string eventName)
+        public ConsumerConfiguration GetConsumerType(string eventName)
         {
-            return DictConsumers.GetValueOrDefault(eventName);
+            return ConsumerConfigurations.GetValueOrDefault(eventName);
         }
     }
 
-    public class Types
+    public class ConsumerConfiguration
     {
         public Type Consumer { get; set; }
         public Type Message { get; set; }
+        public KafkaConsumerConfig Config { get; set; }
     }
 }

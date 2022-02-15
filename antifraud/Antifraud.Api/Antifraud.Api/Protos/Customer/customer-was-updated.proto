@@ -1,0 +1,33 @@
+﻿syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";  
+import "Protos/Customer/types.proto";
+
+
+message CustomerWasUpdated {
+    string id = 1;
+    string documentNumber = 2;
+    string name = 3;
+    string motherName = 4;
+    google.protobuf.Timestamp birthDate = 5;
+    google.protobuf.Timestamp created = 6;
+    CustomerStatusType status = 7;
+    google.protobuf.Timestamp updated = 8;
+    Address address = 9;
+    repeated Contract contacts = 10;
+}
+
+message Address {
+    string street = 1;
+    string number = 2;
+    string neighborhood = 3;
+    string zipCode = 4;
+    string city = 5;
+    string state = 6;
+    string complement = 7;
+}
+
+message Contract {
+    string value = 1;
+    ContactType type = 2;
+}
