@@ -14,7 +14,7 @@ export class CustomerSnapshotController {
     async getByDocument(@Param('documentNumber') documentNumber: string): Promise<CustomerDto[]> {
 
         const customers = await this.customerSnapshotRepository.get(documentNumber);
-        if(!customers)  {
+        if(customers?.length == 0)  {
             throw new NotFoundException();
         }
 

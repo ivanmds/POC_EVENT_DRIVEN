@@ -13,6 +13,7 @@ namespace Backoffice.Models
         public string MotherName { get; set; }
         public DateTime BirthDate { get; set; }
         public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
         public CustomerStatusType Status { get; set; }
         public Address Address { get; set; }
         public IEnumerable<Contact> Contacts { get; set; }

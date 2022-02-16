@@ -1,4 +1,5 @@
-﻿using Backoffice.Models;
+﻿using Backoffice.Clients;
+using Backoffice.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,10 +12,12 @@ namespace Backoffice.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ICustomerClient _customerClient;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ICustomerClient customerClient, ILogger<HomeController> logger)
         {
+            _customerClient = customerClient;
             _logger = logger;
         }
 
