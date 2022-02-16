@@ -17,5 +17,11 @@ namespace Backoffice.Clients
             var uri = $"/api/v1/snapshot-customers/{documentNumber}";
             return await GetAsync<List<Customer>>(uri);
         }
+
+        public async Task<Customer> GetByIdAsync(string customerId)
+        {
+            var uri = $"/api/v1/customers/{customerId}";
+            return await GetAsync<Customer>(uri);
+        }
     }
 }

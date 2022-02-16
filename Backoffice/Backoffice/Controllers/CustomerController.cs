@@ -25,10 +25,11 @@ namespace Backoffice.Controllers
             return View(customers);
         }
 
-        [HttpGet]
+        [HttpGet("~/Customer/Details/{customerId}")]
         public async Task<ActionResult> Details(string customerId)
         {
-            return View();
+            var customer = await _customerClient.GetByIdAsync(customerId);
+            return View(customer);
         }
     }
 }

@@ -7,5 +7,6 @@ namespace Backoffice.Clients
     public interface ICustomerClient
     {
         Task<List<Customer>> GetByDocumentNumberAsync(string documentNumber);
+        Task<Customer> GetByIdAsync(string customerId);
     }
 }

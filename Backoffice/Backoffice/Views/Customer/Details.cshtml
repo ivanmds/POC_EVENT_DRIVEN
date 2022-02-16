@@ -1,0 +1,106 @@
+﻿@model Backoffice.Models.Customer
+
+@{
+    if (Model != null)
+    {
+    <form>
+        <div class="form-group row">
+            <label for="staticEmail" class="col-sm-2 col-form-label"><b>Name</b></label>
+            <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" value="@Model.Name">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"><b>Mother name</b></label>
+            <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" value="@Model.MotherName">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"><b>Status</b></label>
+            <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" value="@Model.Status">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"><b>Birth date</b></label>
+            <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" value="@Model.BirthDate">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"><b>Created</b></label>
+            <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" value="@Model.Created">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"><b>Updated</b></label>
+            <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" value="@Model.Updated">
+            </div>
+        </div>
+
+        @if (Model.Address != null)
+        {
+            <h3>address</h3>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"><b>Street</b></label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control-plaintext" value="@Model.Address.Street">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"><b>Number</b></label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control-plaintext" value="@Model.Address.Number">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"><b>Neighborhood</b></label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control-plaintext" value="@Model.Address.Neighborhood">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"><b>State</b></label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control-plaintext" value="@Model.Address.State">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"><b>City</b></label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control-plaintext" value="@Model.Address.City">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"><b>ZipCode</b></label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control-plaintext" value="@Model.Address.ZipCode">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"><b>Complement</b></label>
+                <div class="col-sm-10">
+                    <input type="text" readonly class="form-control-plaintext" value="@Model.Address.Complement">
+                </div>
+            </div>
+        }
+
+        @if (Model.Contacts != null)
+        {
+            foreach (var contact in Model.Contacts)
+            {
+                <h3>contact @contact.Type</h3>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label"><b>Value</b></label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control-plaintext" value="@contact.Value">
+                    </div>
+                </div>
+            }
+        }
+    </form>
+    }
+}
