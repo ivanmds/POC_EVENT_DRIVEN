@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Backoffice.Models.Types;
+using Backoffice.Models.VOs;
+using System;
+using System.Collections.Generic;
 
 namespace Backoffice.Models
 {
@@ -11,7 +14,7 @@ namespace Backoffice.Models
         public DateTime BirthDate { get; set; }
         public DateTime Created { get; set; }
         public CustomerStatusType Status { get; set; }
-        public VO.Address Address { get; set; }
-        public IEnumerable<VO.Contact> Contacts { get; set; }
+        public Address Address { get; set; }
+        public IEnumerable<Contact> Contacts { get; set; }
     }
 }

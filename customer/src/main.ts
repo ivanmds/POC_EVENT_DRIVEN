@@ -13,5 +13,11 @@ async function bootstrap() {
   SwaggerModule.setup('swagger', app, document);
 
   await app.listen(3000);
+
+  var customerCreateUpdateConsumer = app.get("CUSTOMER_CREATE_UPDATE_CONSUMER");
+  if (!customerCreateUpdateConsumer) {
+      throw Error('paymentConsentConsumer not found');
+  }
+  customerCreateUpdateConsumer.init();
 }
 bootstrap();

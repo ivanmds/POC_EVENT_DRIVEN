@@ -1,23 +1,12 @@
-import { Db, MongoClient } from 'mongodb';
 import { errorMapped } from 'src/common/error-mapped';
 import { BaseEvent } from 'src/common/entities/events/base.event';
 import { Result, ResultData } from 'src/common/result';
+import { BaseRepository } from './base.repository';
 
-export abstract class EventStoreBaseRepository {
-
-    protected mongoClient: MongoClient;
-    protected dbName = 'poc_eda';
-    protected database: Db;
-
+export abstract class EventStoreBaseRepository extends BaseRepository {
 
     constructor(protected collectionName: string) {
-        this.mongoClient = new MongoClient(process.env.MONGO_CONNECTION_STRING);
-        this.loadClient();
-    }
-
-    private async loadClient() {
-        await this.mongoClient.connect();
-        this.database = this.mongoClient.db(this.dbName);
+        super("customer", collectionName)
     }
 
     protected async insertOne<TEvent extends BaseEvent>(event: TEvent): Promise<Result> {

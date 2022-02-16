@@ -41,7 +41,11 @@ export class Mapper {
         dto.name = customer.getName;
         dto.motherName = customer.getMotherName;
         dto.birthDate = new Date(customer.getBirthDate);
-        dto.status = CustomerStatusTypeDto[customer.getStatus.toString()];
+        if(typeof customer.getStatus === typeof '') {
+            dto.status = CustomerStatusTypeDto[customer.getStatus.toString()];
+        } else {
+            dto.status = CustomerStatusTypeDto[CustomerStatusTypeDto[customer.getStatus]];
+        }
         dto.version = customer.version;
         dto.created = customer.created;
         dto.updated = customer.updated;
