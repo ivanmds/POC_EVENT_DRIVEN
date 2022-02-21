@@ -6,5 +6,6 @@ namespace Antifraud.Repositories
     {
         void InsertOne(Customer customer);
         void ReplaceOne(Customer customer);
+        Customer GetByDocumentNumber(string documentNumber);
     }
 }

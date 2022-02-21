@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { AccountDto } from "./account.dto";
-import { PaymentTypeDto } from "./payment-type.dto";
 
 export class PixPaymentDto {
 
@@ -17,7 +16,7 @@ export class PixPaymentDto {
     amount: number;
 
     @ApiProperty()
-    status: PaymentTypeDto[];
+    status: string[];
 
     @ApiProperty()
     created: Date;

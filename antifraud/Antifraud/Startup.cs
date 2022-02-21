@@ -1,3 +1,4 @@
+using Antifraud.Commands;
 using Antifraud.Consumers;
 using Antifraud.Kafka;
 using Antifraud.Mapping;
@@ -49,9 +50,19 @@ namespace Antifraud
                 });
 
 
+            services.AddConsumerAnalysis<PixPaymentFraudAnalyzeCommand, PixPaymentFraudAnalyzeConsumer>(
+              new KafkaConsumerConfigAnalysis
+              {
+                  GroupId = "pix-analysis",
+                  ConnectionString = "localhost:9092",
+                  TopicName = "pix_payment_fraud_analyse_request",
+                  EventName = "pix_payment_fraud_analyse_request"
+              });
+
             var client = new MongoClient("mongodb://user:pwd@localhost:27017/admin");
             services.AddSingleton((IMongoClient)client);
             services.AddSingleton<IMapper, Mapper>();
+            services.AddSingleton<IKafkaProducer, KafkaProducer>();
             services.AddSingleton<ICustomerRepository, CustomerRepository>();
         }
 

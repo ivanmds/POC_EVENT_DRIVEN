@@ -10,8 +10,18 @@ export class PixPaymentRepository extends BaseRepository {
     }
 
 
-   public async create(pixPayment: PixPayment): Promise<void> {
+    public async create(pixPayment: PixPayment): Promise<void> {
         const collection = this.database.collection(this.collectionName);
         await collection.insertOne(pixPayment);
-   }
+    }
+
+    public async getById(id: string): Promise<PixPayment> {
+        const collection = this.database.collection(this.collectionName);
+        return collection.findOne<PixPayment>({ id: id });
+    }
+
+    public async update(pixPayment: PixPayment): Promise<void> {
+        const collection = this.database.collection(this.collectionName);
+        await collection.replaceOne({ id: pixPayment.id }, pixPayment);
+    }
 }

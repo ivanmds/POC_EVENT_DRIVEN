@@ -6,16 +6,35 @@ import { PixPaymentRepository } from "../repositories/pix-payment.repository";
 import * as moment from "moment";
 import { v4 as uuidv4 } from 'uuid';
 import { PaymentType } from "../entities/payment.type";
+import { PixPaymentWasAcceptedEvent } from "src/dtos/externalEvents/pix-payment-was-accepted.event";
+import { KafkaBus } from "src/common/kafka/kafka-bus";
 
 @Injectable()
 export class PixPaymentService {
 
-    constructor(private repository: PixPaymentRepository) { }
+    constructor(private repository: PixPaymentRepository, private bus: KafkaBus) { }
 
 
-    public async createPixPayment(command: PixPaymentCreateCommand) : Promise<void> {
+    public async createPixPayment(command: PixPaymentCreateCommand) : Promise<PixPaymentWasAcceptedEvent> {
         const pixPayment = this.getPixPayment(command);
         await this.repository.create(pixPayment);
+
+        const eventExtenal = new PixPaymentWasAcceptedEvent();
+
+        eventExtenal.transactionCode = pixPayment.transactionCode;
+        eventExtenal.created = pixPayment.created;
+        eventExtenal.status = PaymentType[pixPayment.status[0].toString()];
+
+        await this.bus.publishMessageAny(process.env.TOPIC_FRAUD_ANALYZE_REQUEST, pixPayment.id, pixPayment);
+
+        return eventExtenal;
+    }
+
+    public async setPixPaymentFraudApproval(id: string, analyse: boolean): Promise<void> {
+        const pixPayment = await this.repository.getById(id);
+        const status = analyse ? PaymentType.Approved : PaymentType.Disapproved;
+        pixPayment.status.push(status);
+        
     }
 
 
@@ -34,7 +53,7 @@ export class PixPaymentService {
         pixPayment.created = moment().utc().toDate();
         const id = uuidv4();
         pixPayment.id = id;
-        pixPayment.transactionCode = id.split("-")[0];
+        pixPayment.transactionCode = id;
 
         pixPayment.status = [];
         pixPayment.status.push(PaymentType.Accepted);

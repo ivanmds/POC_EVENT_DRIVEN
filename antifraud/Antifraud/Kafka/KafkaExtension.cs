@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Generic;
 
 namespace Antifraud.Kafka
@@ -12,7 +11,7 @@ namespace Antifraud.Kafka
         {
             var consumerType = typeof(TConsumer);
             var messageType = typeof(TMessage);
-            dictConsumers.Add(config.EventName, new ConsumerConfiguration { Consumer = consumerType, Message = messageType });
+            dictConsumers.Add(config.EventName, new ConsumerConfiguration { Consumer = consumerType, Message = messageType, Config = config });
 
             var kafKaDictConsumer = new KafkaDictConsumers(dictConsumers);
             services.AddSingleton(kafKaDictConsumer);
@@ -20,6 +19,20 @@ namespace Antifraud.Kafka
 
             services.AddSingleton(consumerType);
             services.AddHostedService<ConsumerBackground>();
+        }
+
+        public static void AddConsumerAnalysis<TMessage, TConsumer>(this IServiceCollection services, KafkaConsumerConfigAnalysis config)
+        {
+            var consumerType = typeof(TConsumer);
+            var messageType = typeof(TMessage);
+            dictConsumers.Add(config.EventName, new ConsumerConfiguration { Consumer = consumerType, Message = messageType, ConfigAnalysis = config });
+
+            var kafKaDictConsumer = new KafkaDictConsumers(dictConsumers);
+            services.AddSingleton(kafKaDictConsumer);
+            services.AddSingleton(config);
+
+            services.AddSingleton(consumerType);
+            services.AddHostedService<ConsumerBackgroundAnalysis>();
         }
     }
 }

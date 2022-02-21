@@ -16,6 +16,11 @@ namespace Antifraud.Repositories
             _mongoCollection = _database.GetCollection<Customer>("customers");
         }
 
+        public Customer GetByDocumentNumber(string documentNumber)
+        {
+            return _mongoCollection.Find(c => c.DocumentNumber == documentNumber).FirstOrDefault();
+        }
+
         public void InsertOne(Customer customer)
         {
             _mongoCollection.InsertOne(customer);

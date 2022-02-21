@@ -23,5 +23,6 @@ namespace Antifraud.Kafka
         public Type Consumer { get; set; }
         public Type Message { get; set; }
         public KafkaConsumerConfig Config { get; set; }
+        public KafkaConsumerConfigAnalysis ConfigAnalysis { get; set; }
     }
 }

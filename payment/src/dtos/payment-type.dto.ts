@@ -1,6 +1,6 @@
 export enum PaymentTypeDto {
     Accepted,
-    ApprovalWasRequested,
     Approved,
-    Disapproved
+    Disapproved,
+    CustomerError
 }

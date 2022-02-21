@@ -3,21 +3,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Antifraud.Kafka
 {
-    public class ConsumerBackground : BackgroundService
+    public class ConsumerBackgroundAnalysis : BackgroundService
     {
         private IConsumer<string, string> _consumer;
-        private readonly KafkaConsumerConfig _config;
+        private readonly KafkaConsumerConfigAnalysis _config;
         private readonly IServiceProvider _services;
         private readonly KafkaDictConsumers _kafkaDictConsumers;
 
-        public ConsumerBackground(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfig config)
+        public ConsumerBackgroundAnalysis(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfigAnalysis config)
         {
             _services = services;
             _kafkaDictConsumers = kafkaDictConsumers;
