@@ -1,0 +1,82 @@
+﻿@model List<Backoffice.Models.Transaction>
+
+
+@{
+    if (Model != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model[0].Created)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model[0].TransactionCode)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model[0].Status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model[0].Amount)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    if (item.Status.LastOrDefault().ToLower() == "approved")
+                    {
+                        <tr style="background-color:#00ff90">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Created)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TransactionCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LastStatus)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Amount)
+                            </td>
+                        </tr>
+                    }
+                    else if (item.Status.LastOrDefault().ToLower() == "disapproved")
+                    {
+                        <tr style="background-color:#bd4242">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Created)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TransactionCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LastStatus)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Amount)
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr style="background-color:#c4b03c">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Created)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TransactionCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LastStatus)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Amount)
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+}

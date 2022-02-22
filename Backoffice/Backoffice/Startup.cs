@@ -1,14 +1,10 @@
 using Backoffice.Clients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Backoffice
 {
@@ -28,7 +24,12 @@ namespace Backoffice
                 client.BaseAddress = new Uri(Configuration["Clients:CustomerUrn"]);
             });
 
+            services.AddHttpClient(TransactionClient.KEY, client => {
+                client.BaseAddress = new Uri(Configuration["Clients:PixPaymentUrn"]);
+            });
+
             services.AddSingleton<ICustomerClient, CustomerClient>();
+            services.AddSingleton<ITransactionClient, TransactionClient>();
 
             services.AddControllersWithViews();
         }

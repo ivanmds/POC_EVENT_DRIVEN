@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { KafkaBus } from './common/kafka/kafka-bus';
+import { CustomerController } from './controllers/customer.controller';
 import { PixPaymentController } from './controllers/pix-payment.controller';
 import { PixPaymentFraudAnalyseConsumer } from './cunsumer/pix-payment-fraud-analyse.consumer';
 import { PixPaymentRepository } from './domain/repositories/pix-payment.repository';
@@ -22,7 +23,7 @@ const customerCreateUpdateConsumer = {
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
   ],
-  controllers: [PixPaymentController],
+  controllers: [PixPaymentController, CustomerController],
   providers: [KafkaBus, PixPaymentRepository, PixPaymentService, customerCreateUpdateConsumer],
 })
 export class AppModule {}

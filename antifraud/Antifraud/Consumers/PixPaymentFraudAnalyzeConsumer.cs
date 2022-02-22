@@ -2,6 +2,7 @@
 using Antifraud.Commands;
 using Antifraud.Kafka;
 using Antifraud.Repositories;
+using System.Threading.Tasks;
 
 namespace Antifraud.Consumers
 {
@@ -20,8 +21,10 @@ namespace Antifraud.Consumers
         {
             try
             {
+                Task.Delay(3000);
                 var customer = _customerRepository.GetByDocumentNumber(message.Debit.DocumentNumber);
-                var result = customer is null ? AnalysisResult.CustomerError : AnalysisResult.Approved;
+                var result = customer is null ? AnalysisResult.CustomerError : customer.Status == CustomerStatusType.Simple ? AnalysisResult.Disapproved : AnalysisResult.Approved;
+                
                 var analysis = new PixPaymentAnalysis() { TransactionCode = message.TransactionCode, Result = result };
                 _kafkaProducer.Publish("pix_payment_fraud_analyse_response", analysis);
             }

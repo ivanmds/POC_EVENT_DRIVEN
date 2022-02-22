@@ -7,10 +7,12 @@ namespace Backoffice.Controllers
     public class CustomerController : Controller
     {
         private readonly ICustomerClient _customerClient;
+        private readonly ITransactionClient _transactionClient;
 
-        public CustomerController(ICustomerClient customerClient)
+        public CustomerController(ICustomerClient customerClient, ITransactionClient transactionClient)
         {
             _customerClient = customerClient;
+            _transactionClient = transactionClient;
         }
 
         public IActionResult Index()
@@ -30,6 +32,13 @@ namespace Backoffice.Controllers
         {
             var customer = await _customerClient.GetByIdAsync(customerId);
             return View(customer);
+        }
+
+        [HttpGet("~/Customer/Transactions/{documentNumber}")]
+        public async Task<IActionResult> Transactions(string documentNumber)
+        {
+            var transactions = await _transactionClient.GetByDocumentNumberAsync(documentNumber);
+            return View(transactions);
         }
     }
 }

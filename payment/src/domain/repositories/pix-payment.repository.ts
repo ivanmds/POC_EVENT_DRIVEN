@@ -20,6 +20,11 @@ export class PixPaymentRepository extends BaseRepository {
         return collection.findOne<PixPayment>({ id: id });
     }
 
+    public async getByDocumentNumber(documentNumber: string): Promise<PixPayment[]> {
+        const collection = this.database.collection(this.collectionName);
+        return collection.find<PixPayment>({ 'debit.documentNumber': documentNumber }).toArray();
+    }
+
     public async update(pixPayment: PixPayment): Promise<void> {
         const collection = this.database.collection(this.collectionName);
         await collection.replaceOne({ id: pixPayment.id }, pixPayment);

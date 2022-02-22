@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  backoffice:
+    image: ${DOCKER_REGISTRY-}backoffice
+    build:
+      context: .
+      dockerfile: Backoffice/Dockerfile
