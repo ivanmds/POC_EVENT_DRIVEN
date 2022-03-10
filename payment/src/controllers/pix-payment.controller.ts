@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { BaseController } from "src/common/base.controller";
 import { PixPayment } from "src/domain/entities/pix-payment.entity";
@@ -20,6 +20,7 @@ export class PixPaymentController extends BaseController {
     }
 
     @Post()
+    @HttpCode(202)
     public async CreatePixPayment(@Body() command: PixPaymentCreateCommand): Promise<PixPaymentWasAcceptedEvent> {
         return await this.pixService.createPixPayment(command);
     }

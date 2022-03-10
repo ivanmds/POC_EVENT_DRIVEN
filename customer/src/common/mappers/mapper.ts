@@ -44,7 +44,7 @@ export class Mapper {
         if(typeof customer.getStatus === typeof '') {
             dto.status = CustomerStatusTypeDto[customer.getStatus.toString()];
         } else {
-            dto.status = CustomerStatusTypeDto[CustomerStatusTypeDto[customer.getStatus]];
+            dto.status = CustomerStatusTypeDto[customer.getStatus.toString()];
         }
         dto.version = customer.version;
         dto.created = customer.created;

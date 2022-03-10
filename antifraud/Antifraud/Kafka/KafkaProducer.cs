@@ -24,7 +24,11 @@ namespace Antifraud.Kafka
 
                 var json = JsonConvert.SerializeObject(message, jsonSerializerSettings);
 
-                producer.Produce(topicName, new Message<Null, string> { Value = json });
+                var result = producer.ProduceAsync(topicName, new Message<Null, string> { Value = json }).Result;
+                if(result.Status != PersistenceStatus.Persisted)
+                {
+                    producer.ProduceAsync(topicName, new Message<Null, string> { Value = json }).Wait();
+                }
             }
         }
     }
