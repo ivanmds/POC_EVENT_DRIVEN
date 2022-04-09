@@ -2,15 +2,25 @@ FROM node:14-alpine as builder
 
 WORKDIR /usr/src/app
 
-COPY package.json ./
+RUN npm i -g @nestjs/cli
 
-RUN npm install
+COPY package.json ./
+RUN npm install --only=prod
 
 COPY . .
 
 RUN npm run build --prod
+RUN npm prune --production
+
+
+FROM node:14-alpine as app
+
+WORKDIR /usr/src/app
 
 ENV LISTEN_PORT=3000
 EXPOSE $LISTEN_PORT
 
-CMD [ "npm", "start:prod" ]
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+CMD [ "node", "dist/main" ]

@@ -6,7 +6,7 @@ export abstract class BaseRepository {
     protected database: Db;
 
     constructor(protected dbName: string, protected collectionName: string) {
-        this.mongoClient = new MongoClient('mongodb://user:pwd@localhost:27017/admin');
+        this.mongoClient = new MongoClient(process.env.MONGO_CONNECTION_STRING);
         this.loadClient();
     }
 
