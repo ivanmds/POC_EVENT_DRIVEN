@@ -7,9 +7,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Backoffice/Backoffice.csproj", "Backoffice/"]
+COPY ["*", "Backoffice/"]
+COPY ["Views", "Backoffice/Views"]
 RUN dotnet restore "Backoffice/Backoffice.csproj"
-COPY . .
 WORKDIR "/src/Backoffice"
 RUN dotnet build "Backoffice.csproj" -c Release -o /app/build
 
