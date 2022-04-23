@@ -10,7 +10,7 @@ namespace Antifraud.Kafka
         {
             var config = new ProducerConfig
             {
-                BootstrapServers = "localhost:9092",
+                BootstrapServers = "kafka-service:9092",
                 ClientId = "antifraud-fraud-analysis"
             };
 

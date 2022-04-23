@@ -3,6 +3,7 @@ using Antifraud.Commands;
 using Antifraud.Kafka;
 using Antifraud.Repositories;
 using System.Threading.Tasks;
+using Antifraud.ExternalContracts;
 
 namespace Antifraud.Consumers
 {

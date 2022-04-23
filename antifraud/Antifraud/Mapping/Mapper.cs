@@ -1,7 +1,7 @@
-﻿using Google.Protobuf.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Entity = Antifraud.Domain.Entitties;
 using VOs = Antifraud.Domain.Entitties.VOs;
+using Antifraud.ExternalContracts;
 
 namespace Antifraud.Mapping
 {
@@ -54,7 +54,7 @@ namespace Antifraud.Mapping
             return eAddress;
         }
 
-        private IEnumerable<VOs.Contact> GetContact(RepeatedField<global::Contract> contracts)
+        private IEnumerable<VOs.Contact> GetContact(List<Contract> contracts)
         {
             foreach(var contact in contracts)
             {

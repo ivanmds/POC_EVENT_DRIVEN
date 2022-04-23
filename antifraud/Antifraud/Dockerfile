@@ -7,9 +7,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Antifraud/Antifraud.csproj", "Antifraud/"]
+RUN ls
+COPY ["*", "Antifraud/"]
 RUN dotnet restore "Antifraud/Antifraud.csproj"
-COPY . .
 WORKDIR "/src/Antifraud"
 RUN dotnet build "Antifraud.csproj" -c Release -o /app/build
 

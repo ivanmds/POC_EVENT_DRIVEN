@@ -1,4 +1,5 @@
 ﻿using Antifraud.Domain.Entitties;
+using Antifraud.ExternalContracts;
 
 namespace Antifraud.Mapping
 {

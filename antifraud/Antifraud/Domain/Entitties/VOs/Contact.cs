@@ -1,4 +1,6 @@
-﻿namespace Antifraud.Domain.Entitties.VOs
+﻿using Antifraud.ExternalContracts;
+
+namespace Antifraud.Domain.Entitties.VOs
 {
     public class Contact
     {

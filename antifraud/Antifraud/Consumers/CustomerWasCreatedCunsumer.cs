@@ -1,6 +1,7 @@
 ﻿using Antifraud.Kafka;
 using Antifraud.Mapping;
 using Antifraud.Repositories;
+using Antifraud.ExternalContracts;
 
 namespace Antifraud.Consumers
 {
