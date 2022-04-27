@@ -36,7 +36,7 @@ namespace Antifraud
                 new KafkaConsumerConfig
                 {
                     GroupId = "antifraud-consumers",
-                    ConnectionString = "localhost:9092",
+                    ConnectionString = "kafka-service:9092",
                     TopicName = "customer_external_events",
                     EventName = "CUSTOMER_WAS_CREATED"
                 });
@@ -45,7 +45,7 @@ namespace Antifraud
                 new KafkaConsumerConfig
                 {
                     GroupId = "antifraud-consumers",
-                    ConnectionString = "localhost:9092",
+                    ConnectionString = "kafka-service:9092",
                     TopicName = "customer_external_events",
                     EventName = "CUSTOMER_WAS_UPDATED"
                 });
@@ -55,12 +55,12 @@ namespace Antifraud
               new KafkaConsumerConfigAnalysis
               {
                   GroupId = "pix-analysis",
-                  ConnectionString = "localhost:9092",
+                  ConnectionString = "kafka-service:9092",
                   TopicName = "pix_payment_fraud_analyse_request",
                   EventName = "pix_payment_fraud_analyse_request"
               });
 
-            var client = new MongoClient("mongodb://user:pwd@localhost:27017/admin");
+            var client = new MongoClient("mongodb://user:pwd@mongo-service:27017/admin");
             services.AddSingleton((IMongoClient)client);
             services.AddSingleton<IMapper, Mapper>();
             services.AddSingleton<IKafkaProducer, KafkaProducer>();
