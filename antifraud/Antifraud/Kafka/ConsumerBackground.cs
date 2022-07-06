@@ -65,6 +65,7 @@ namespace Antifraud.Kafka
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
             }
         }
 

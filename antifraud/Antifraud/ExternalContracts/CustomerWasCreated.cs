@@ -8,8 +8,6 @@ namespace Antifraud.ExternalContracts
         public string DocumentNumber { get; set; }
         public string Name { get; set; }
         public string MotherName { get; set; }
-        public DateTime BirthDate { get; set; }
-        public DateTime Created { get; set; }
         public CustomerStatusType Status { get; set; }
     }
 }

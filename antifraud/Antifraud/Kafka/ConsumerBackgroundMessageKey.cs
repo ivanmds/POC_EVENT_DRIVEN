@@ -1,40 +1,34 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Antifraud.Kafka
 {
-    public class ConsumerBackgroundAnalysis : BackgroundService
+    public class ConsumerBackgroundMessageKey : BackgroundService
     {
         private IConsumer<string, string> _consumer;
-        private readonly KafkaConsumerConfigAnalysis _config;
         private readonly IServiceProvider _services;
-        private readonly KafkaDictConsumers _kafkaDictConsumers;
 
-        public ConsumerBackgroundAnalysis(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfigAnalysis config)
+        public ConsumerBackgroundMessageKey(IServiceProvider services)
         {
             _services = services;
-            _kafkaDictConsumers = kafkaDictConsumers;
-            _config = config;
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
             var conf = new ConsumerConfig
             {
-                GroupId = _config.GroupId,
-                BootstrapServers = _config.ConnectionString,
+                GroupId = "test_group",
+                BootstrapServers = "localhost:9092",
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 EnableAutoCommit = true
             };
 
             _consumer = new ConsumerBuilder<string, string>(conf).Build();
-            _consumer.Subscribe(_config.TopicName);
+            _consumer.Subscribe("test.messageKey");
             await base.StartAsync(cancellationToken);
         }
 
@@ -48,24 +42,15 @@ namespace Antifraud.Kafka
                     while (!stoppingToken.IsCancellationRequested)
                     {
                         var result = _consumer.Consume(stoppingToken);
+                        var messageValue = result.Message.Value;
+                        var messageKey = result.Message.Key;
 
-                        var eventName = Encoding.Default.GetString(result.Message.Headers[0].GetValueBytes());
-
-                        var msgBody = result.Message.Value;
-                        var types = _kafkaDictConsumers.GetConsumerType(eventName);
-                        var consumer = scope.ServiceProvider.GetService(types.Consumer);
-
-                        var @event = JsonConvert.DeserializeObject(msgBody, types.Message);
-
-                        var methodConsume = types.Consumer.GetMethod("Consume");
-                        
-                        methodConsume.Invoke(consumer, new[] { @event });
+                        Console.WriteLine($"messageKey sended {messageKey} with message {messageValue} it's in partiion {result.Partition.Value}");
                     }
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
             }
         }
 

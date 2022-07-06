@@ -22,7 +22,6 @@ namespace Antifraud.Consumers
         {
             try
             {
-                Task.Delay(3000).Wait();
                 var customer = _customerRepository.GetByDocumentNumber(message.Debit.DocumentNumber);
                 var result = customer is null ? AnalysisResult.CustomerError : customer.Status == CustomerStatusType.Simple ? AnalysisResult.Disapproved : AnalysisResult.Approved;
                 
