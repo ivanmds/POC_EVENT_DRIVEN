@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - "main"
-    paths: 
-      - 'payment/**'
+    # paths: 
+    #   - 'payment/**'
 
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,9 +17,11 @@ jobs:
           node-version: "16.x"
       - name: Building application
         run: |
+          cd payment
           npm i -g @nestjs/cli
           npm install
           npm run build --omit=dev
+          npm run test
 
   # deploy:
   #   needs: build
