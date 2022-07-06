@@ -7,7 +7,7 @@ on:
     #   - 'payment/**'
 
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,7 +21,7 @@ jobs:
           npm i -g @nestjs/cli
           npm install
           npm run build --omit=dev
-          npm run test
+          
 
   # deploy:
   #   needs: build
