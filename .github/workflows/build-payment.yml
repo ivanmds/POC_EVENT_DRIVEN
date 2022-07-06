@@ -1,0 +1,60 @@
+name: build payment
+on: 
+  push:
+    branches:
+      - "main"
+    paths: 
+       - 'payment/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use NodeJS
+        uses: actions/setup-node@v1
+        with: 
+          node-version: "16.x"
+      - name: Building application
+        run: |
+          npm i -g @nestjs/cli
+          npm install
+          npm run build --omit=dev
+
+  # deploy:
+  #   needs: build
+  #   name: 'deploy stg'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo 'deploy container'
+
+#   checking_approval:
+#     name: checking external approval
+#     if: github.event_name == 'repository_dispatch' && github.event.action == 'release_was_analysed'
+#     needs: [build]
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: checking if release wasn't approved 
+#         if: github.event.client_payload.wasApproved == false
+#         run: |
+#           echo release wasn't approved
+#           exit 1
+#       - name: checking if release was approved
+#         run: echo release was approved
+
+#   deploy_prod:
+#     name: 'deploy to production'
+#     runs-on: ubuntu-latest
+#     needs: [checking_approval]
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           ref: main
+#       - run: ls -a
+#       - uses: trstringer/manual-approval@v1
+#         with:
+#           secret: ${{ github.TOKEN }}
+#           minimum-approvals: 1
+#           approvers: ivanmds
+#           issue-title: "Deploying to production"
+#       - run: echo 'deploy container to prod'
