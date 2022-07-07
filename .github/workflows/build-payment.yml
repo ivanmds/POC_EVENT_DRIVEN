@@ -29,21 +29,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          context: ./payment
-          push: true
-          tags: ivanmds/poc_event_driven_payment:1.0.4
-      
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ivanmds/poc_event_driven_payment:1.0.4
-          tag_with_ref: true
 
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./payment
+          push: true
+          tags: ivanmds/poc_event_driven_payment:latest, ivanmds/poc_event_driven_payment:{{ github.nun_number }}
+      
+    
       
 #   checking_approval:
 #     name: checking external approval
