@@ -42,9 +42,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
         
       - name: Build and push
-        run: cd payment
         uses: docker/build-push-action@v3
         with:
+          context: ./payment
           push: true
           tags: ivanmds/poc_event_driven_payment:1.0.4
 
