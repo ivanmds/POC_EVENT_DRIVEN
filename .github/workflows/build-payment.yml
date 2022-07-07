@@ -24,11 +24,10 @@ jobs:
 
   build-and-publish-docker:
     needs: build
-    name: 'deploy payment'
+    name: 'build and publish docker'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd payment
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -43,6 +42,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
         
       - name: Build and push
+        run: cd payment
         uses: docker/build-push-action@v3
         with:
           push: true
