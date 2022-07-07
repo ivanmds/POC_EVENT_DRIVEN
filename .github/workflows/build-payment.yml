@@ -20,8 +20,8 @@ jobs:
           cd payment
           npm i -g @nestjs/cli
           npm install
-          npm run build --omit=dev
-          
+          npm run build
+          npm run test
 
   # deploy:
   #   needs: build
