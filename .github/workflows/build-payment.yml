@@ -23,12 +23,12 @@ jobs:
           npm run build
           npm run test
 
-  # deploy:
-  #   needs: build
-  #   name: 'deploy stg'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: echo 'deploy container'
+  deploy:
+    needs: build
+    name: 'deploy payment'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'deploy container'
 
 #   checking_approval:
 #     name: checking external approval
