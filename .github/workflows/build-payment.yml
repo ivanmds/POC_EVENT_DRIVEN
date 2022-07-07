@@ -59,7 +59,7 @@ jobs:
         with:
           context: ./payment
           push: true
-          tags: 1.0.4
+          tags: ivanmds/poc_event_driven_payment:1.0.4
         
       # - name: Build and push
       #   uses: docker/build-push-action@v3
