@@ -1,10 +1,10 @@
-name: build payment
+name: build customer
 on: 
   push:
     branches:
       - "main"
     paths: 
-      - 'payment/**'
+      - 'customer/**'
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
           node-version: "16.x"
       - name: Building application
         run: |
-          cd payment
+          cd customer
           npm i -g @nestjs/cli
           npm install
           npm run build
@@ -38,9 +38,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ./payment
+          context: ./customer
           push: true
-          tags: ivanmds/poc_event_driven_payment:latest, ivanmds/poc_event_driven_payment:${{ github.run_number }}
+          tags: iivanmds/poc_event_driven_customer:latest, ivanmds/poc_event_driven_customer:${{ github.run_number }}
 
   deploy_prod:
     name: 'deploy to production'
