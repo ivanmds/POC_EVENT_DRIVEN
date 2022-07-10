@@ -40,7 +40,7 @@ jobs:
         with:
           context: ./customer
           push: true
-          tags: iivanmds/poc_event_driven_customer:latest, ivanmds/poc_event_driven_customer:${{ github.run_number }}
+          tags: ivanmds/poc_event_driven_customer:latest, ivanmds/poc_event_driven_customer:${{ github.run_number }}
 
   deploy_prod:
     name: 'deploy to production'
