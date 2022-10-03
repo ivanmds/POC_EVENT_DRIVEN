@@ -8,6 +8,7 @@ import { KafkaBus } from "src/common/kafka/kafka-bus";
 import { AddressDto } from "src/dtos/address.dto";
 import { Mapper } from "src/common/mappers/mapper";
 import { ContactDto } from "src/dtos/contact.dto";
+import { Span } from "nestjs-otel";
 
 @Injectable()
 export class CustomerService {
@@ -17,6 +18,7 @@ export class CustomerService {
         private bus: KafkaBus,
         private mapper: Mapper) { }
 
+    @Span("CustomerService_get")
     public async get(aggregateId: string, version?: number): Promise<ResultData<Customer>> {
         const result = await this.eventStore.get(aggregateId, version);
 
@@ -28,6 +30,7 @@ export class CustomerService {
         return ResultData.okWithData(customer);
     }
 
+    @Span("CustomerService_create")
     public async create(command: CustomerCreateCommand): Promise<ResultData<Customer>> {
 
         const customer = Customer.create(command.documentNumber, command.name, command.motherName, command.birthDate);
@@ -53,6 +56,7 @@ export class CustomerService {
         return ResultData.okWithData(customer);
     }
 
+    @Span("CustomerService_setAddress")
     public async setAddress(aggregateId: string, addressDto: AddressDto): Promise<ResultData<Customer>> {
         const result = await this.eventStore.get(aggregateId);
 
@@ -84,6 +88,7 @@ export class CustomerService {
         return ResultData.okWithData(customer);
     }
 
+    @Span("CustomerService_addContact")
     public async addContact(aggregateId: string, contactDto: ContactDto): Promise<ResultData<Customer>> {
         const result = await this.eventStore.get(aggregateId);
 

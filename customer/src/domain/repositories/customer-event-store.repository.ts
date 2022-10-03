@@ -2,6 +2,7 @@ import { Result, ResultData } from "src/common/result";
 import { Customer } from "../entities/customer.entity";
 import { EventStoreBaseRepository } from "./event-store-base.repository";
 import { Injectable } from "@nestjs/common";
+import { Span } from "nestjs-otel";
 
 @Injectable()
 export class CustomerEventStoreRepository extends EventStoreBaseRepository {
@@ -10,6 +11,7 @@ export class CustomerEventStoreRepository extends EventStoreBaseRepository {
         super('customerEvents');
     }
 
+    @Span("CustomerEventStoreRepository_save")
     async save(customer: Customer): Promise<Result> {
 
         const events = customer.getUncommittedEvents();
@@ -17,6 +19,7 @@ export class CustomerEventStoreRepository extends EventStoreBaseRepository {
         return Result.ok();
     }
 
+    @Span("CustomerEventStoreRepository_get")
     async get(aggregateId: string, version?: number): Promise<ResultData<Customer>> {
 
         const result = await this.getAllEvents(aggregateId, version);

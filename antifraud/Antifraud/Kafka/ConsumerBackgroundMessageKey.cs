@@ -19,17 +19,28 @@ namespace Antifraud.Kafka
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            var conf = new ConsumerConfig
+            try
             {
-                GroupId = "test_group",
-                BootstrapServers = "localhost:9092",
-                AutoOffsetReset = AutoOffsetReset.Earliest,
-                EnableAutoCommit = true
-            };
+                var conf = new ConsumerConfig
+                {
+                    GroupId = "core.invoice.group.id",
+                    BootstrapServers = "b-3.acsprd-msk.tvk9yu.c13.kafka.us-east-1.amazonaws.com:9092,b-1.acsprd-msk.tvk9yu.c13.kafka.us-east-1.amazonaws.com:9092,b-2.acsprd-msk.tvk9yu.c13.kafka.us-east-1.amazonaws.com:9092",
 
-            _consumer = new ConsumerBuilder<string, string>(conf).Build();
-            _consumer.Subscribe("test.messageKey");
-            await base.StartAsync(cancellationToken);
+                    AutoOffsetReset = AutoOffsetReset.Earliest,
+                    EnableAutoCommit = true
+                };
+
+
+                _consumer = new ConsumerBuilder<string, string>(conf).Build();
+
+                _consumer.Subscribe("bankly.event.boleto");
+                await base.StartAsync(cancellationToken);
+
+               
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -37,6 +48,9 @@ namespace Antifraud.Kafka
             try
             {
                 using var scope = _services.CreateScope();
+                _consumer.Assign(new TopicPartitionOffset("bankly.event.boleto", 0, 195033));
+
+                //_consumer.Seek(new TopicPartitionOffset("bankly.event.boleto", 0, 195033));
                 await Task.Run(async () =>
                 {
                     while (!stoppingToken.IsCancellationRequested)
@@ -44,6 +58,7 @@ namespace Antifraud.Kafka
                         var result = _consumer.Consume(stoppingToken);
                         var messageValue = result.Message.Value;
                         var messageKey = result.Message.Key;
+                        _consumer.Commit(result);
 
                         Console.WriteLine($"messageKey sended {messageKey} with message {messageValue} it's in partiion {result.Partition.Value}");
                     }

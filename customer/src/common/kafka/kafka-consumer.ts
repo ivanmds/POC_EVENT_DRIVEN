@@ -1,4 +1,5 @@
 import { Kafka } from "kafkajs";
+import { Span } from "nestjs-otel";
 
 
 export abstract class KafkaConsumer {
@@ -7,6 +8,7 @@ export abstract class KafkaConsumer {
         protected groupid: string,
         protected topic: string) { }
 
+    @Span("KafkaConsumer_init")
     async init(): Promise<any> {
 
         const kafka = new Kafka({

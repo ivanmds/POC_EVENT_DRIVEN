@@ -1,4 +1,5 @@
 import { Db, MongoClient } from "mongodb";
+import { Span } from "nestjs-otel";
 
 export abstract class BaseRepository {
     
@@ -10,6 +11,7 @@ export abstract class BaseRepository {
         this.loadClient();
     }
 
+    @Span("BaseRepository_loadClient")
     private async loadClient() {
         await this.mongoClient.connect();
         this.database = this.mongoClient.db(this.dbName);

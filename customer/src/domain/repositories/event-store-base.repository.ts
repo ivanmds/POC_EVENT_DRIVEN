@@ -2,6 +2,7 @@ import { errorMapped } from 'src/common/error-mapped';
 import { BaseEvent } from 'src/common/entities/events/base.event';
 import { Result, ResultData } from 'src/common/result';
 import { BaseRepository } from './base.repository';
+import { Span } from 'nestjs-otel';
 
 export abstract class EventStoreBaseRepository extends BaseRepository {
 
@@ -9,6 +10,7 @@ export abstract class EventStoreBaseRepository extends BaseRepository {
         super("customer", collectionName)
     }
 
+    @Span("EventStoreBaseRepository_insertOne")
     protected async insertOne<TEvent extends BaseEvent>(event: TEvent): Promise<Result> {
         try {
             const collection = this.database.collection(this.collectionName);
@@ -19,6 +21,7 @@ export abstract class EventStoreBaseRepository extends BaseRepository {
         }
     }
 
+    @Span("EventStoreBaseRepository_insertMany")
     protected async insertMany<TEvent extends BaseEvent>(events: TEvent[]): Promise<Result> {
         try {
             const collection = this.database.collection(this.collectionName);
@@ -29,6 +32,7 @@ export abstract class EventStoreBaseRepository extends BaseRepository {
         }
     }
 
+    @Span("EventStoreBaseRepository_getAllEvents")
     protected async getAllEvents(aggregateId: string, version?: number): Promise<ResultData<BaseEvent[]>> {
         try {
 

@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Span } from "nestjs-otel";
 import { KafkaConsumer } from "src/common/kafka/kafka-consumer";
 import { Mapper } from "src/common/mappers/mapper";
 import { CustomerShapshotRepository } from "src/domain/repositories/customer-snapshot.repository";
@@ -16,6 +17,7 @@ export class CustomerCreateOrUpdateConsumer extends KafkaConsumer {
     }
 
 
+    @Span("CustomerCreateOrUpdateConsumer")
     async do(message: any): Promise<void> {
         const id = message.id;
         const result = await this.customerService.get(id);

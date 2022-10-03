@@ -1,3 +1,4 @@
+import { Span } from "nestjs-otel";
 import { BaseEvent } from "./events/base.event";
 
 export abstract class AggregateRoot {
@@ -24,6 +25,7 @@ export abstract class AggregateRoot {
 
     getUncommittedEvents = (): BaseEvent[] => this.uncommittedEvents;
 
+    @Span("AggregateRoot_applyEvent")
     applyEvent(event: BaseEvent) {
         this.apply(event);
         this.version = event.aggregateVersion;
@@ -32,6 +34,7 @@ export abstract class AggregateRoot {
 
     protected upVersion = () => this.version++;
 
+    @Span("AggregateRoot_raiseEvent")
     protected raiseEvent<TEvent extends BaseEvent>(event: TEvent) {
         this.upVersion();
         event.aggregateVersion = this.version;

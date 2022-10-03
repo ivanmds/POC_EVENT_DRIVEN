@@ -60,6 +60,8 @@ namespace Antifraud
                   EventName = "pix_payment_fraud_analyse_request"
               });
 
+            services.AddHostedService<ConsumerBackgroundMessageKey>();
+
             var client = new MongoClient("mongodb://user:pwd@mongo-service:27017/admin");
             services.AddSingleton((IMongoClient)client);
             services.AddSingleton<IMapper, Mapper>();

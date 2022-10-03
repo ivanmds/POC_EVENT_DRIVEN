@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Span } from "nestjs-otel";
 import { errorMapped } from "src/common/error-mapped";
 import { Result } from "src/common/result";
 import { CustomerDto } from "src/dtos/customer.dto";
@@ -11,6 +12,7 @@ export class CustomerShapshotRepository extends BaseRepository {
         super("customer", "customerSnapshot");
     }
 
+    @Span("CustomerShapshotRepository_insertOne")
     async insertOne(customer: CustomerDto): Promise<Result> {
         try {
             const collection = this.database.collection(this.collectionName);
@@ -21,6 +23,7 @@ export class CustomerShapshotRepository extends BaseRepository {
         }
     }
 
+    @Span("CustomerShapshotRepository_replaceOne")
     async replaceOne(customer: CustomerDto): Promise<Result> {
         try {
             const collection = this.database.collection(this.collectionName);
@@ -31,6 +34,7 @@ export class CustomerShapshotRepository extends BaseRepository {
         }
     }
 
+    @Span("CustomerShapshotRepository_get")
     async get(documentNumber: string): Promise<CustomerDto[]> {
         const collection = this.database.collection(this.collectionName);
         return await collection.find<CustomerDto>({ documentNumber: documentNumber }).toArray();
