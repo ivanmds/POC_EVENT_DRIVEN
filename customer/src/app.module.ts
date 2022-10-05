@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { OpenTelemetryModule } from 'nestjs-otel';
 import { KafkaBus } from './common/kafka/kafka-bus';
 import { Mapper } from './common/mappers/mapper';
@@ -48,7 +47,6 @@ const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 
 @Module({
   imports: [
-    PrometheusModule.register(),
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     OpenTelemetryModuleConfig
   ],

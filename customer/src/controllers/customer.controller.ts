@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
 import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { MetricService, Span } from "nestjs-otel";
+import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
 import { BaseController } from "src/common/controllers/base.controller";
 import { Mapper } from "src/common/mappers/mapper";
 import { Tracing } from "src/common/otlp/tracing";
@@ -10,6 +9,8 @@ import { CustomerCreateCommand } from "src/dtos/commands/customer-create.command
 import { CustomerPutAddressCommand } from "src/dtos/commands/customer-put-address.command";
 import { CustomerPutContactCommand } from "src/dtos/commands/customer-put-contact.command";
 import { CustomerDto } from "src/dtos/customer.dto";
+import { Span } from "nestjs-otel/lib/tracing/decorators/span";
+
 
 @ApiTags("customers")
 @Controller("api/v1/customers")
@@ -22,7 +23,7 @@ export class CustomerController extends BaseController {
     constructor(
         private customerService: CustomerService,
         private mapper: Mapper,
-        private tracing: Tracing) {
+        tracing: Tracing) {
         super();
 
         const meter = tracing.getMeter("customer_controller");
@@ -31,9 +32,9 @@ export class CustomerController extends BaseController {
         this.counterCustomerUpdate = meter.createCounter('customer_updated');
     }
 
-    @Span("CustomerGet")
     @Get(":customerId")
     @ApiQuery({ name: "version", type: String, required: false })
+    @Span("CustomerController_Get")
     async get(@Param('customerId') customerId: string, @Query('version') version?: string): Promise<CustomerDto> {
 
         this.counterCustomerGot.add(1);
@@ -50,7 +51,6 @@ export class CustomerController extends BaseController {
     }
 
     @Post()
-    @Span("CustomerPost")
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
     async post(@Body() command: CustomerCreateCommand): Promise<CustomerDto> {
         const result = await this.customerService.create(command);
@@ -66,7 +66,6 @@ export class CustomerController extends BaseController {
     }
 
     @Patch(':customerId/address')
-    @Span("CustomerPatchAddress")
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
     async putAddress(@Param('customerId') customerId: string, @Body() command: CustomerPutAddressCommand) {
         const result = await this.customerService.setAddress(customerId, command);
@@ -82,7 +81,6 @@ export class CustomerController extends BaseController {
     }
 
     @Patch(':customerId/contact')
-    @Span("CustomerPatchContact")
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
     async putContact(@Param('customerId') customerId: string, @Body() command: CustomerPutContactCommand) {
         const result = await this.customerService.addContact(customerId, command);
