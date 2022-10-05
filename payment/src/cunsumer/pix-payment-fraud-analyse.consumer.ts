@@ -1,6 +1,7 @@
 import { KafkaConsumer } from "src/common/kafka/kafka-consumer";
 import { PaymentType } from "src/domain/entities/payment.type";
 import { PixPaymentRepository } from "src/domain/repositories/pix-payment.repository";
+import { Span } from "nestjs-otel"
 
 export class PixPaymentFraudAnalyseConsumer extends KafkaConsumer {
 
@@ -9,6 +10,7 @@ export class PixPaymentFraudAnalyseConsumer extends KafkaConsumer {
         super('payment-fraud', process.env.TOPIC_FRAUD_ANALYZE_RESPONSE);
     }
 
+    @Span("PixPaymentFraudAnalyseConsumer_do")
     async do(message: any): Promise<void> {
         
         const pixPayment = await this.repository.getById(message.transactionCode);

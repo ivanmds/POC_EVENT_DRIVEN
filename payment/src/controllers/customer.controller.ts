@@ -4,6 +4,7 @@ import { PixPayment } from "src/domain/entities/pix-payment.entity";
 import { PixPaymentRepository } from "src/domain/repositories/pix-payment.repository";
 import { PaymentTypeDto } from "src/dtos/payment-type.dto";
 import { PixPaymentDto } from "src/dtos/pix-payment.dto";
+import { Span } from 'nestjs-otel';
 
 
 @ApiTags("customers")
@@ -14,6 +15,7 @@ export class CustomerController {
 
 
     @Get(":documentNumber/transactions")
+    @Span("CustomerController_Get")
     public async GetPixPayment(@Param('documentNumber') documentNumber: string): Promise<PixPaymentDto[]> {
 
         const pixPayments = await this.pixRepository.getByDocumentNumber(documentNumber);

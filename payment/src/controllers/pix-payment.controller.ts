@@ -8,25 +8,38 @@ import { PixPaymentCreateCommand } from "src/dtos/commands/pix-payment-create.co
 import { PixPaymentWasAcceptedEvent } from "src/dtos/externalEvents/pix-payment-was-accepted.event";
 import { PaymentTypeDto } from "src/dtos/payment-type.dto";
 import { PixPaymentDto } from "src/dtos/pix-payment.dto";
+import { Span } from "nestjs-otel";
+import { Tracing } from "src/common/otlp/trancing";
 
 
 @ApiTags("pix-payment")
 @Controller("api/v1/pix-payment")
 export class PixPaymentController extends BaseController {
 
+    private counterPaymentGot: any;
+    private counterPaymentCreated: any;
+
     constructor(private pixService: PixPaymentService,
-                private pixRepository: PixPaymentRepository) {
+                private pixRepository: PixPaymentRepository,
+                tracing: Tracing) {
         super();
+
+        const meter = tracing.getMeter("payment_controller");
+        this.counterPaymentGot = meter.createCounter('payment_got');
+        this.counterPaymentCreated = meter.createCounter('payment_created');
     }
 
     @Post()
     @HttpCode(202)
     public async CreatePixPayment(@Body() command: PixPaymentCreateCommand): Promise<PixPaymentWasAcceptedEvent> {
+        this.counterPaymentCreated.add(1);
         return await this.pixService.createPixPayment(command);
     }
 
     @Get(":id")
+    @Span("PixPaymentController_Get")
     public async GetPixPayment(@Param('id') id: string): Promise<PixPaymentDto> {
+        this.counterPaymentGot.add(1);
         const pixPayment = await this.pixRepository.getById(id);
         return this.parseToPixPaymentDto(pixPayment);
 

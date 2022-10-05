@@ -31,7 +31,7 @@ const customerCreateUpdateConsumer = {
 
 const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
   metrics: {
-    hostMetrics: true, // Includes Host Metrics
+    hostMetrics: false, // Includes Host Metrics
     apiMetrics: {
       enable: true, // Includes api metrics
       defaultAttributes: {

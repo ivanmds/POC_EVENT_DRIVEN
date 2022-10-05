@@ -17,7 +17,7 @@ FROM node:14-alpine as app
 
 WORKDIR /usr/src/app
 
-ENV LISTEN_PORT=3001
+ENV LISTEN_PORT=3002
 EXPOSE $LISTEN_PORT
 
 COPY --from=builder /usr/src/app/dist ./dist
