@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,8 +16,9 @@ namespace Antifraud.Kafka
         private readonly KafkaConsumerConfig _config;
         private readonly IServiceProvider _services;
         private readonly KafkaDictConsumers _kafkaDictConsumers;
+        private readonly ActivitySource _activitySource;
 
-        public ConsumerBackground(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfig config)
+        public ConsumerBackground(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfig config, ActivitySource _activitySource)
         {
             _services = services;
             _kafkaDictConsumers = kafkaDictConsumers;
@@ -25,6 +27,7 @@ namespace Antifraud.Kafka
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
+            var activity = _activitySource.StartActivity("ConsumerBackground.StartAsync");
             var conf = new ConsumerConfig
             {
                 GroupId = _config.GroupId,
