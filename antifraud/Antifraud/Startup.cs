@@ -11,6 +11,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Antifraud.ExternalContracts;
+using System;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Exporter;
 
 namespace Antifraud
 {
@@ -26,6 +31,9 @@ namespace Antifraud
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string kafkaConnection = Environment.GetEnvironmentVariable("KAFKA_BROKER") ?? "http://localhost:9092";
+            string mongoConnection = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? "mongodb://user:pwd@localhost:27017/admin";
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -36,7 +44,7 @@ namespace Antifraud
                 new KafkaConsumerConfig
                 {
                     GroupId = "antifraud-consumers",
-                    ConnectionString = "kafka-service:9092",
+                    ConnectionString = kafkaConnection,
                     TopicName = "customer_external_events",
                     EventName = "CUSTOMER_WAS_CREATED"
                 });
@@ -45,7 +53,7 @@ namespace Antifraud
                 new KafkaConsumerConfig
                 {
                     GroupId = "antifraud-consumers",
-                    ConnectionString = "kafka-service:9092",
+                    ConnectionString = kafkaConnection,
                     TopicName = "customer_external_events",
                     EventName = "CUSTOMER_WAS_UPDATED"
                 });
@@ -55,14 +63,14 @@ namespace Antifraud
               new KafkaConsumerConfigAnalysis
               {
                   GroupId = "pix-analysis",
-                  ConnectionString = "kafka-service:9092",
+                  ConnectionString = kafkaConnection,
                   TopicName = "pix_payment_fraud_analyse_request",
                   EventName = "pix_payment_fraud_analyse_request"
               });
 
             services.AddHostedService<ConsumerBackgroundMessageKey>();
 
-            var client = new MongoClient("mongodb://user:pwd@mongo-service:27017/admin");
+            var client = new MongoClient(mongoConnection);
             services.AddSingleton((IMongoClient)client);
             services.AddSingleton<IMapper, Mapper>();
             services.AddSingleton<IKafkaProducer, KafkaProducer>();
@@ -88,6 +96,54 @@ namespace Antifraud
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private  void StartOpenTelemetry(IServiceCollection services)
+        {
+            var serviceName = "antifraud";
+            var serviceVersion = "1.0.0";
+
+            string uri = Environment.GetEnvironmentVariable("COLLECTOR_URI") ?? "http://localhost:4318";
+
+            var isGrpcValue = Environment.GetEnvironmentVariable("IS_GRPC");
+            bool isGrpc = isGrpcValue == "YES" ? true : false;
+
+            Console.WriteLine(uri);
+            Console.WriteLine(isGrpc);
+
+            services.AddOpenTelemetryMetrics(builder =>
+            {
+                //builder.AddHttpClientInstrumentation();
+                //builder.AddAspNetCoreInstrumentation();
+                builder.AddMeter("Antifraud");
+                builder.SetResourceBuilder(
+                        ResourceBuilder.CreateDefault()
+                            .AddService(serviceName: serviceName, serviceVersion: serviceVersion));
+
+                builder.AddOtlpExporter(opt =>
+                {
+                    opt.Protocol = isGrpc ? OtlpExportProtocol.Grpc : OtlpExportProtocol.HttpProtobuf;
+                    opt.Endpoint = new Uri(uri);
+
+                });
+            });
+
+
+            services.AddOpenTelemetryTracing(tracerProviderBuilder =>
+            {
+                tracerProviderBuilder
+                     .AddOtlpExporter(opt =>
+                     {
+                         opt.Protocol = isGrpc ? OtlpExportProtocol.Grpc : OtlpExportProtocol.HttpProtobuf;
+                         opt.Endpoint = new Uri(uri);
+                     })
+                    .AddSource(serviceName)
+                    .SetResourceBuilder(
+                        ResourceBuilder.CreateDefault()
+                            .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
+                    .AddHttpClientInstrumentation();
+
             });
         }
     }
