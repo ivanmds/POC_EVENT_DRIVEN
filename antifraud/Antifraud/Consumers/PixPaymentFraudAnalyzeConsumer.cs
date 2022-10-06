@@ -4,6 +4,7 @@ using Antifraud.Kafka;
 using Antifraud.Repositories;
 using Antifraud.ExternalContracts;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 
 namespace Antifraud.Consumers
 {
@@ -12,6 +13,7 @@ namespace Antifraud.Consumers
         private readonly ICustomerRepository _customerRepository;
         private readonly IKafkaProducer _kafkaProducer;
         private readonly ActivitySource _activitySource;
+        private readonly Counter<int> _counter;
 
         public PixPaymentFraudAnalyzeConsumer(ICustomerRepository customerRepository, IKafkaProducer kafkaProducer, ActivitySource activitySource)
         {
@@ -24,6 +26,7 @@ namespace Antifraud.Consumers
         {
             try
             {
+                _counter.Add(1);
                 var activity = _activitySource.StartActivity("PixPaymentFraudAnalyzeConsumer.Consume");
                 var customer = _customerRepository.GetByDocumentNumber(message.Debit.DocumentNumber);
                 var result = customer is null ? AnalysisResult.CustomerError : customer.Status == CustomerStatusType.Simple ? AnalysisResult.Disapproved : AnalysisResult.Approved;

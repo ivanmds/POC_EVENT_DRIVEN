@@ -1,4 +1,5 @@
-﻿using Confluent.Kafka;
+﻿using System;
+using Confluent.Kafka;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -6,11 +7,12 @@ namespace Antifraud.Kafka
 {
     public class KafkaProducer : IKafkaProducer
     {
+        private static string kafkaConnection = Environment.GetEnvironmentVariable("KAFKA_BROKER") ?? "http://localhost:9092";
         public void Publish(string topicName, object message)
         {
             var config = new ProducerConfig
             {
-                BootstrapServers = "kafka-service:9092",
+                BootstrapServers = kafkaConnection,
                 ClientId = "antifraud-fraud-analysis"
             };
 

@@ -16,6 +16,8 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Exporter;
+using System.Diagnostics.Metrics;
+using System.Diagnostics;
 
 namespace Antifraud
 {
@@ -39,6 +41,8 @@ namespace Antifraud
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Antifraud", Version = "v1" });
             });
+            
+            StartOpenTelemetry(services);
 
             services.AddConsumer<CustomerWasCreated, CustomerWasCreatedCunsumer>(
                 new KafkaConsumerConfig
@@ -67,8 +71,6 @@ namespace Antifraud
                   TopicName = "pix_payment_fraud_analyse_request",
                   EventName = "pix_payment_fraud_analyse_request"
               });
-
-            services.AddHostedService<ConsumerBackgroundMessageKey>();
 
             var client = new MongoClient(mongoConnection);
             services.AddSingleton((IMongoClient)client);
@@ -104,6 +106,15 @@ namespace Antifraud
             var serviceName = "antifraud";
             var serviceVersion = "1.0.0";
 
+            Meter _meter = new Meter(serviceName, "1.0.0");
+            Counter<int> _counter = _meter.CreateCounter<int>("pix_was_analysed");
+            var activitySource = new ActivitySource(serviceName);
+
+            services.AddSingleton(_meter);
+            services.AddSingleton(_counter);
+            services.AddSingleton(activitySource);
+
+
             string uri = Environment.GetEnvironmentVariable("COLLECTOR_URI") ?? "http://localhost:4318";
 
             var isGrpcValue = Environment.GetEnvironmentVariable("IS_GRPC");
@@ -116,7 +127,7 @@ namespace Antifraud
             {
                 //builder.AddHttpClientInstrumentation();
                 //builder.AddAspNetCoreInstrumentation();
-                builder.AddMeter("Antifraud");
+                builder.AddMeter(serviceName);
                 builder.SetResourceBuilder(
                         ResourceBuilder.CreateDefault()
                             .AddService(serviceName: serviceName, serviceVersion: serviceVersion));

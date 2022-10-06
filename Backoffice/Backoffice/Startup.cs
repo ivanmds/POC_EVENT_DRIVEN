@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
 using System;
 
 namespace Backoffice
@@ -20,13 +24,17 @@ namespace Backoffice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string customerUri = Environment.GetEnvironmentVariable("CUSTOMER_SERVICE_URI") ?? "http://localhost:3000";
             services.AddHttpClient(CustomerClient.KEY, client => {
-                client.BaseAddress = new Uri(Configuration["Clients:CustomerUrn"]);
+                client.BaseAddress = new Uri(customerUri);
             });
 
+            string paymentUri = Environment.GetEnvironmentVariable("PAYMENT_SERVICE_URI") ?? "http://localhost:3002";
             services.AddHttpClient(TransactionClient.KEY, client => {
-                client.BaseAddress = new Uri(Configuration["Clients:PixPaymentUrn"]);
+                client.BaseAddress = new Uri(paymentUri);
             });
+
+            StartOpenTelemetry(services);
 
             services.AddSingleton<ICustomerClient, CustomerClient>();
             services.AddSingleton<ITransactionClient, TransactionClient>();
@@ -61,5 +69,54 @@ namespace Backoffice
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+        private void StartOpenTelemetry(IServiceCollection services)
+        {
+            var serviceName = "Backoffice";
+            var serviceVersion = "1.0.0";
+
+            string uri = Environment.GetEnvironmentVariable("COLLECTOR_URI") ?? "http://localhost:4318";
+
+            var isGrpcValue = Environment.GetEnvironmentVariable("IS_GRPC");
+            bool isGrpc = isGrpcValue == "YES" ? true : false;
+
+            Console.WriteLine(uri);
+            Console.WriteLine(isGrpc);
+
+            services.AddOpenTelemetryMetrics(builder =>
+            {
+                //builder.AddHttpClientInstrumentation();
+                //builder.AddAspNetCoreInstrumentation();
+                builder.AddMeter("Antifraud");
+                builder.SetResourceBuilder(
+                        ResourceBuilder.CreateDefault()
+                            .AddService(serviceName: serviceName, serviceVersion: serviceVersion));
+
+                builder.AddOtlpExporter(opt =>
+                {
+                    opt.Protocol = isGrpc ? OtlpExportProtocol.Grpc : OtlpExportProtocol.HttpProtobuf;
+                    opt.Endpoint = new Uri(uri);
+
+                });
+            });
+
+
+            services.AddOpenTelemetryTracing(tracerProviderBuilder =>
+            {
+                tracerProviderBuilder
+                     .AddOtlpExporter(opt =>
+                     {
+                         opt.Protocol = isGrpc ? OtlpExportProtocol.Grpc : OtlpExportProtocol.HttpProtobuf;
+                         opt.Endpoint = new Uri(uri);
+                     })
+                    .AddSource(serviceName)
+                    .SetResourceBuilder(
+                        ResourceBuilder.CreateDefault()
+                            .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
+                    .AddHttpClientInstrumentation();
+
+            });
+        }
+
     }
 }
