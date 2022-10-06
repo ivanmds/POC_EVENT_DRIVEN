@@ -16,9 +16,8 @@ namespace Antifraud.Kafka
         private readonly KafkaConsumerConfig _config;
         private readonly IServiceProvider _services;
         private readonly KafkaDictConsumers _kafkaDictConsumers;
-        private readonly ActivitySource _activitySource;
 
-        public ConsumerBackground(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfig config, ActivitySource _activitySource)
+        public ConsumerBackground(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfig config)
         {
             _services = services;
             _kafkaDictConsumers = kafkaDictConsumers;
@@ -27,7 +26,6 @@ namespace Antifraud.Kafka
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            var activity = _activitySource.StartActivity("ConsumerBackground.StartAsync");
             var conf = new ConsumerConfig
             {
                 GroupId = _config.GroupId,

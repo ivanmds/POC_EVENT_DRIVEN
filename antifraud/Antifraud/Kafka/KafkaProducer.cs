@@ -7,7 +7,7 @@ namespace Antifraud.Kafka
 {
     public class KafkaProducer : IKafkaProducer
     {
-        private static string kafkaConnection = Environment.GetEnvironmentVariable("KAFKA_BROKER") ?? "http://localhost:9092";
+        private static string kafkaConnection = Environment.GetEnvironmentVariable("KAFKA_BROKER") ?? "localhost:9092";
         public void Publish(string topicName, object message)
         {
             var config = new ProducerConfig

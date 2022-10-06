@@ -9,7 +9,7 @@ import { CustomerCreateCommand } from "src/dtos/commands/customer-create.command
 import { CustomerPutAddressCommand } from "src/dtos/commands/customer-put-address.command";
 import { CustomerPutContactCommand } from "src/dtos/commands/customer-put-contact.command";
 import { CustomerDto } from "src/dtos/customer.dto";
-import { Span } from "nestjs-otel/lib/tracing/decorators/span";
+import { Span } from "nestjs-otel";
 
 
 @ApiTags("customers")
@@ -32,9 +32,9 @@ export class CustomerController extends BaseController {
         this.counterCustomerUpdate = meter.createCounter('customer_updated');
     }
 
+    @Span("CustomerController_Get")
     @Get(":customerId")
     @ApiQuery({ name: "version", type: String, required: false })
-    @Span("CustomerController_Get")
     async get(@Param('customerId') customerId: string, @Query('version') version?: string): Promise<CustomerDto> {
 
         this.counterCustomerGot.add(1);
@@ -50,6 +50,7 @@ export class CustomerController extends BaseController {
         }
     }
 
+    @Span("CustomerController_Post")
     @Post()
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
     async post(@Body() command: CustomerCreateCommand): Promise<CustomerDto> {
@@ -65,6 +66,7 @@ export class CustomerController extends BaseController {
         }
     }
 
+    @Span("CustomerController_Patch_Address")
     @Patch(':customerId/address')
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
     async putAddress(@Param('customerId') customerId: string, @Body() command: CustomerPutAddressCommand) {
@@ -80,6 +82,7 @@ export class CustomerController extends BaseController {
         }
     }
 
+    @Span("CustomerController_Patch_Contact")
     @Patch(':customerId/contact')
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
     async putContact(@Param('customerId') customerId: string, @Body() command: CustomerPutContactCommand) {

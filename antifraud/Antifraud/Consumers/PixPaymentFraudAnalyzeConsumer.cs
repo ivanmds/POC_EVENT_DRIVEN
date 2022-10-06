@@ -15,11 +15,12 @@ namespace Antifraud.Consumers
         private readonly ActivitySource _activitySource;
         private readonly Counter<int> _counter;
 
-        public PixPaymentFraudAnalyzeConsumer(ICustomerRepository customerRepository, IKafkaProducer kafkaProducer, ActivitySource activitySource)
+        public PixPaymentFraudAnalyzeConsumer(ICustomerRepository customerRepository, IKafkaProducer kafkaProducer, ActivitySource activitySource, Counter<int> counter)
         {
             _customerRepository = customerRepository;
             _kafkaProducer = kafkaProducer;
             _activitySource = activitySource;
+            _counter = counter;
         }
 
         public void Consume(PixPaymentFraudAnalyzeCommand message)

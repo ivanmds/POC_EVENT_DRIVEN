@@ -23,6 +23,9 @@ namespace Antifraud
 {
     public class Startup
     {
+        private string serviceName = "antifraud";
+        private string serviceVersion = "1.0.0";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -33,7 +36,16 @@ namespace Antifraud
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string kafkaConnection = Environment.GetEnvironmentVariable("KAFKA_BROKER") ?? "http://localhost:9092";
+
+            Meter _meter = new Meter(serviceName, "1.0.0");
+            Counter<int> _counter = _meter.CreateCounter<int>("pix_was_analysed");
+            var activitySource = new ActivitySource(serviceName);
+
+            services.AddSingleton(_meter);
+            services.AddSingleton(_counter);
+            services.AddSingleton(activitySource);
+
+            string kafkaConnection = Environment.GetEnvironmentVariable("KAFKA_BROKER") ?? "localhost:9092";
             string mongoConnection = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? "mongodb://user:pwd@localhost:27017/admin";
 
             services.AddControllers();
@@ -103,18 +115,6 @@ namespace Antifraud
 
         private  void StartOpenTelemetry(IServiceCollection services)
         {
-            var serviceName = "antifraud";
-            var serviceVersion = "1.0.0";
-
-            Meter _meter = new Meter(serviceName, "1.0.0");
-            Counter<int> _counter = _meter.CreateCounter<int>("pix_was_analysed");
-            var activitySource = new ActivitySource(serviceName);
-
-            services.AddSingleton(_meter);
-            services.AddSingleton(_counter);
-            services.AddSingleton(activitySource);
-
-
             string uri = Environment.GetEnvironmentVariable("COLLECTOR_URI") ?? "http://localhost:4318";
 
             var isGrpcValue = Environment.GetEnvironmentVariable("IS_GRPC");
