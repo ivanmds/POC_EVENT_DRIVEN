@@ -25,10 +25,15 @@ namespace Antifraud
     {
         private string serviceName = "antifraud";
         private string serviceVersion = "1.0.0";
+        private Meter _meter = new Meter("Antifraud", "1.0.0");
+        private Counter<int> _counter;
+        private ActivitySource activitySource;
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            _counter = _meter.CreateCounter<int>("pix_was_analysed");
+            activitySource = new ActivitySource(serviceName);
         }
 
         public IConfiguration Configuration { get; }
@@ -37,13 +42,13 @@ namespace Antifraud
         public void ConfigureServices(IServiceCollection services)
         {
 
-            Meter _meter = new Meter(serviceName, "1.0.0");
-            Counter<int> _counter = _meter.CreateCounter<int>("pix_was_analysed");
-            var activitySource = new ActivitySource(serviceName);
+            
 
             services.AddSingleton(_meter);
             services.AddSingleton(_counter);
             services.AddSingleton(activitySource);
+
+            StartOpenTelemetry(services);
 
             string kafkaConnection = Environment.GetEnvironmentVariable("KAFKA_BROKER") ?? "localhost:9092";
             string mongoConnection = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? "mongodb://user:pwd@localhost:27017/admin";
@@ -53,8 +58,6 @@ namespace Antifraud
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Antifraud", Version = "v1" });
             });
-            
-            StartOpenTelemetry(services);
 
             services.AddConsumer<CustomerWasCreated, CustomerWasCreatedCunsumer>(
                 new KafkaConsumerConfig
@@ -125,9 +128,7 @@ namespace Antifraud
 
             services.AddOpenTelemetryMetrics(builder =>
             {
-                //builder.AddHttpClientInstrumentation();
-                //builder.AddAspNetCoreInstrumentation();
-                builder.AddMeter(serviceName);
+                builder.AddMeter("Antifraud");
                 builder.SetResourceBuilder(
                         ResourceBuilder.CreateDefault()
                             .AddService(serviceName: serviceName, serviceVersion: serviceVersion));
@@ -153,8 +154,10 @@ namespace Antifraud
                     .SetResourceBuilder(
                         ResourceBuilder.CreateDefault()
                             .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
-                    .AddHttpClientInstrumentation();
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation();
 
+                tracerProviderBuilder.AddConsoleExporter();
             });
         }
     }

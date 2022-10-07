@@ -16,7 +16,7 @@ namespace Antifraud.Mapping
 
         public Entity.Customer Map(CustomerWasCreated customerWasCreated)
         {
-            var activity = _activitySource.StartActivity("Mapper.Map_CustomerWasCreated");
+            using var activity = _activitySource.StartActivity("Mapper.Map_CustomerWasCreated", ActivityKind.Internal);
             var customer = new Entity.Customer();
             customer._id = customerWasCreated.Id;
             customer.DocumentNumber = customerWasCreated.DocumentNumber;
@@ -28,7 +28,7 @@ namespace Antifraud.Mapping
 
         public Entity.Customer Map(CustomerWasUpdated customerWasUpdated)
         {
-            var activity = _activitySource.StartActivity("Mapper.Map_CustomerWasUpdated");
+            using var activity = _activitySource.StartActivity("Mapper.Map_CustomerWasUpdated", ActivityKind.Internal);
             var customer = new Entity.Customer();
             customer._id = customerWasUpdated.Id;
             customer.DocumentNumber = customerWasUpdated.DocumentNumber;
@@ -51,7 +51,7 @@ namespace Antifraud.Mapping
 
         private VOs.Address GetAddress(Address address)
         {
-            var activity = _activitySource.StartActivity("Mapper.GetAddress");
+            using var activity = _activitySource.StartActivity("Mapper.GetAddress", ActivityKind.Internal);
             var eAddress = new VOs.Address();
             eAddress.Street = address.Street;
             eAddress.City = address.City;
@@ -66,7 +66,7 @@ namespace Antifraud.Mapping
 
         private IEnumerable<VOs.Contact> GetContact(List<Contract> contracts)
         {
-            var activity = _activitySource.StartActivity("Mapper.GetContact");
+            using var activity = _activitySource.StartActivity("Mapper.GetContact", ActivityKind.Internal);
             foreach (var contact in contracts)
             {
                 yield return new VOs.Contact() { Value = contact.Value, Type = contact.Type };

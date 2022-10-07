@@ -28,7 +28,7 @@ namespace Antifraud.Consumers
             try
             {
                 _counter.Add(1);
-                var activity = _activitySource.StartActivity("PixPaymentFraudAnalyzeConsumer.Consume");
+                using var activity = _activitySource.StartActivity("PixPaymentFraudAnalyzeConsumer.Consume", ActivityKind.Consumer, default(ActivityContext));
                 var customer = _customerRepository.GetByDocumentNumber(message.Debit.DocumentNumber);
                 var result = customer is null ? AnalysisResult.CustomerError : customer.Status == CustomerStatusType.Simple ? AnalysisResult.Disapproved : AnalysisResult.Approved;
                 

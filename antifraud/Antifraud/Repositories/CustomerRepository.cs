@@ -11,28 +11,29 @@ namespace Antifraud.Repositories
         private readonly IMongoCollection<Customer> _mongoCollection;
         private readonly ActivitySource _activitySource;
 
-        public CustomerRepository(IMongoClient mongoClient)
+        public CustomerRepository(IMongoClient mongoClient, ActivitySource activitySource)
         {
             _mongoClient = mongoClient;
             _database = _mongoClient.GetDatabase("antifraud");
             _mongoCollection = _database.GetCollection<Customer>("customers");
+            _activitySource = activitySource;
         }
 
         public Customer GetByDocumentNumber(string documentNumber)
         {
-            var activity = _activitySource.StartActivity("CustomerRepository.GetByDocumentNumber");
+            using var activity = _activitySource.StartActivity("CustomerRepository.GetByDocumentNumber", ActivityKind.Internal); ;
             return _mongoCollection.Find(c => c.DocumentNumber == documentNumber).FirstOrDefault();
         }
 
         public void InsertOne(Customer customer)
         {
-            var activity = _activitySource.StartActivity("CustomerRepository.InsertOne");
+            using var activity = _activitySource.StartActivity("CustomerRepository.InsertOne", ActivityKind.Internal);
             _mongoCollection.InsertOne(customer);
         }
 
         public void ReplaceOne(Customer customer)
         {
-            var activity = _activitySource.StartActivity("CustomerRepository.ReplaceOne");
+            using var activity = _activitySource.StartActivity("CustomerRepository.ReplaceOne", ActivityKind.Internal);
             _mongoCollection.ReplaceOne(m => m._id == customer._id, customer);
         }
     }
