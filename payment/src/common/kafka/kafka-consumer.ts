@@ -22,14 +22,11 @@ export abstract class KafkaConsumer {
 
             await consumer.run({
                 eachMessage: async ({ topic, partition, message }) => {
-                    console.log({
-                        topic,
-                        partition,
-                        offset: message.offset,
-                        value: message.value.toString(),
-                    });
+                   
+                    const traceId = message.headers["trace_id"]?.toString();
+                    const spanId = message.headers["span_id"]?.toString();
 
-                    this.do(JSON.parse(message.value.toString()));
+                    this.do(JSON.parse(message.value.toString()), traceId, spanId);
                 },
             });
         } else {
@@ -37,5 +34,5 @@ export abstract class KafkaConsumer {
         }
     }
 
-    abstract do(message: any): Promise<void>;
+    abstract do(message: any, traceId: string, spanId: string): Promise<void>;
 }

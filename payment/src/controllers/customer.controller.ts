@@ -1,22 +1,34 @@
-import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
+import { Controller, Get, NotFoundException, Param, Headers } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { PixPayment } from "src/domain/entities/pix-payment.entity";
 import { PixPaymentRepository } from "src/domain/repositories/pix-payment.repository";
 import { PaymentTypeDto } from "src/dtos/payment-type.dto";
 import { PixPaymentDto } from "src/dtos/pix-payment.dto";
-import { Span } from 'nestjs-otel';
+import { Span, TraceService } from 'nestjs-otel';
 
 
 @ApiTags("customers")
 @Controller("api/v1/customers")
 export class CustomerController {
 
-    constructor(private pixRepository: PixPaymentRepository) { }
+    constructor(private pixRepository: PixPaymentRepository, private readonly traceService: TraceService,) { }
 
 
     @Get(":documentNumber/transactions")
     @Span("CustomerController_Get")
-    public async GetPixPayment(@Param('documentNumber') documentNumber: string): Promise<PixPaymentDto[]> {
+    public async GetPixPayment(@Param('documentNumber') documentNumber: string, @Headers() headers): Promise<PixPaymentDto[]> {
+
+        const traceparent = headers["traceparent"] as string;
+        const span = this.traceService.getSpan();
+       //obs: pesquisar forma correta pra atualizar o contexto com a parentSpanId
+        if (traceparent) {
+            const context = span.spanContext();
+
+            const traceparentSplitted = traceparent.split("-")
+            context.traceId = traceparentSplitted[1];
+            context.spanId = traceparentSplitted[2];
+        }
+        const span2 = this.traceService.startSpan("CustomerController_Get2");
 
         const pixPayments = await this.pixRepository.getByDocumentNumber(documentNumber);
         if (pixPayments?.length > 0) {
@@ -26,8 +38,13 @@ export class CustomerController {
                 dtos.push(dto);
             });
 
+            span2.end();
+            span.end();
             return dtos;
         }
+
+        span2.end();
+        span.end();
 
         throw new NotFoundException(); 
     }

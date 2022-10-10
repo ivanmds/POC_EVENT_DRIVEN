@@ -2,6 +2,6 @@
 {
     public interface IConsumer<TMessage>
     {
-        void Consume(TMessage message);
+        void Consume(TMessage message, string parentSpanId = null, string parentTraceId = null);
     }
 }

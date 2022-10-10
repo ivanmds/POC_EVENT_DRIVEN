@@ -14,10 +14,10 @@ async function bootstrap() {
 
   await app.listen(3002);
 
-  // var consumer = app.get("PIX_PAYMENT_CONSUMER");
-  // if (!consumer) {
-  //     throw Error('consumer not found');
-  // }
-  // consumer.init();
+  var consumer = app.get("PIX_PAYMENT_CONSUMER");
+  if (!consumer) {
+      throw Error('consumer not found');
+  }
+  consumer.init();
 }
 bootstrap();

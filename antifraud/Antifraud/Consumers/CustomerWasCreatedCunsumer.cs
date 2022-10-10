@@ -22,7 +22,7 @@ namespace Antifraud.Consumers
             _logger = logger;
         }
 
-        public void Consume(CustomerWasCreated message)
+        public void Consume(CustomerWasCreated message, string parrentSpanId = null, string parentTraceId = null)
         {
             using var activity = _activitySource.StartActivity("CustomerWasCreatedCunsumer.Consume", ActivityKind.Consumer, default(ActivityContext));
             var customer = _mapper.Map(message);

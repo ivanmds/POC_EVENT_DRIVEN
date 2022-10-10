@@ -11,7 +11,6 @@ import { CustomerPutContactCommand } from "src/dtos/commands/customer-put-contac
 import { CustomerDto } from "src/dtos/customer.dto";
 import { Span } from "nestjs-otel";
 
-
 @ApiTags("customers")
 @Controller("api/v1/customers")
 export class CustomerController extends BaseController {
@@ -32,9 +31,9 @@ export class CustomerController extends BaseController {
         this.counterCustomerUpdate = meter.createCounter('customer_updated');
     }
 
-    @Span("CustomerController_Get")
     @Get(":customerId")
     @ApiQuery({ name: "version", type: String, required: false })
+    @Span("CustomerController_get")
     async get(@Param('customerId') customerId: string, @Query('version') version?: string): Promise<CustomerDto> {
 
         this.counterCustomerGot.add(1);
@@ -50,9 +49,9 @@ export class CustomerController extends BaseController {
         }
     }
 
-    @Span("CustomerController_Post")
     @Post()
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
+    @Span("CustomerController_post")
     async post(@Body() command: CustomerCreateCommand): Promise<CustomerDto> {
         const result = await this.customerService.create(command);
 
@@ -66,9 +65,9 @@ export class CustomerController extends BaseController {
         }
     }
 
-    @Span("CustomerController_Patch_Address")
     @Patch(':customerId/address')
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
+    @Span("CustomerController_patch_address")
     async putAddress(@Param('customerId') customerId: string, @Body() command: CustomerPutAddressCommand) {
         const result = await this.customerService.setAddress(customerId, command);
 
@@ -82,9 +81,9 @@ export class CustomerController extends BaseController {
         }
     }
 
-    @Span("CustomerController_Patch_Contact")
     @Patch(':customerId/contact')
     @ApiResponse({ status: 500, type: MessageError, isArray: true })
+    @Span("CustomerController_patch_contact")
     async putContact(@Param('customerId') customerId: string, @Body() command: CustomerPutContactCommand) {
         const result = await this.customerService.addContact(customerId, command);
 

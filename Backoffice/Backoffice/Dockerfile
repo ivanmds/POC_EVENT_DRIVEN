@@ -11,6 +11,7 @@ COPY ["*", "Backoffice/"]
 COPY ["Views", "Backoffice/Views"]
 RUN dotnet restore "Backoffice/Backoffice.csproj"
 WORKDIR "/src/Backoffice"
+RUN ls
 RUN dotnet build "Backoffice.csproj" -c Release -o /app/build
 
 FROM build AS publish

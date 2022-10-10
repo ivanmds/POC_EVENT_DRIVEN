@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,6 +54,23 @@ namespace Antifraud.Kafka
                         var eventName = Encoding.Default.GetString(result.Message.Headers[0].GetValueBytes());
 
                         var msgBody = result.Message.Value;
+                        
+                        var spanIdBuffer = result.Message.Headers.FirstOrDefault(p => p.Key == "span_id")?.GetValueBytes();
+                        string spanId = null;
+                        if(spanIdBuffer != null)
+                        {
+                            spanId = Encoding.Default.GetString(spanIdBuffer);
+                        }
+
+
+                        var traceIdBuffer = result.Message.Headers.FirstOrDefault(p => p.Key == "trace_id")?.GetValueBytes();
+                        string traceId = null;
+                        if (spanIdBuffer != null)
+                        {
+                            traceId = Encoding.Default.GetString(traceIdBuffer);
+                        }
+
+
                         var types = _kafkaDictConsumers.GetConsumerType(eventName);
                         var consumer = scope.ServiceProvider.GetService(types.Consumer);
 
@@ -60,7 +78,7 @@ namespace Antifraud.Kafka
 
                         var methodConsume = types.Consumer.GetMethod("Consume");
                         
-                        methodConsume.Invoke(consumer, new[] { @event });
+                        methodConsume.Invoke(consumer, new[] { @event, spanId, traceId });
                     }
                 });
             }

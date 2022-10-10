@@ -7,17 +7,19 @@ import { PixPaymentController } from './controllers/pix-payment.controller';
 import { PixPaymentFraudAnalyseConsumer } from './cunsumer/pix-payment-fraud-analyse.consumer';
 import { PixPaymentRepository } from './domain/repositories/pix-payment.repository';
 import { PixPaymentService } from './domain/services/pix-payment.service';
-import { OpenTelemetryModule } from 'nestjs-otel';
+import { OpenTelemetryModule, TraceService } from 'nestjs-otel';
 
 const customerCreateUpdateConsumer = {
   provide: "PIX_PAYMENT_CONSUMER",
   inject: [
-    PixPaymentRepository
+    PixPaymentRepository,
+    TraceService
   ],
   useFactory: async (
-    pixPaymentRepository: PixPaymentRepository
+    pixPaymentRepository: PixPaymentRepository,
+    traceService: TraceService
   ) => {
-    return new PixPaymentFraudAnalyseConsumer(pixPaymentRepository);
+    return new PixPaymentFraudAnalyseConsumer(pixPaymentRepository, traceService);
   }
 };
 

@@ -8,7 +8,7 @@ import { PixPaymentCreateCommand } from "src/dtos/commands/pix-payment-create.co
 import { PixPaymentWasAcceptedEvent } from "src/dtos/externalEvents/pix-payment-was-accepted.event";
 import { PaymentTypeDto } from "src/dtos/payment-type.dto";
 import { PixPaymentDto } from "src/dtos/pix-payment.dto";
-import { Span } from "nestjs-otel";
+import { Span, TraceService } from "nestjs-otel";
 import { Tracing } from "src/common/otlp/trancing";
 
 
@@ -18,9 +18,11 @@ export class PixPaymentController extends BaseController {
 
     private counterPaymentGot: any;
     private counterPaymentCreated: any;
+    
 
     constructor(private pixService: PixPaymentService,
                 private pixRepository: PixPaymentRepository,
+                private readonly traceService: TraceService,
                 tracing: Tracing) {
         super();
 
@@ -31,7 +33,11 @@ export class PixPaymentController extends BaseController {
 
     @Post()
     @HttpCode(202)
+    @Span("PixPaymentController_Post")
     public async CreatePixPayment(@Body() command: PixPaymentCreateCommand): Promise<PixPaymentWasAcceptedEvent> {
+        const span = this.traceService.getSpan();
+        span.setAttribute("documentNumber", command.debit.documentNumber);
+
         this.counterPaymentCreated.add(1);
         return await this.pixService.createPixPayment(command);
     }

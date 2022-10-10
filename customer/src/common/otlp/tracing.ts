@@ -9,6 +9,7 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { CompositePropagator, W3CTraceContextPropagator, W3CBaggagePropagator } from '@opentelemetry/core';
 
 @Injectable()
 export class Tracing implements OnModuleInit {
@@ -36,6 +37,11 @@ export class Tracing implements OnModuleInit {
             resource: new Resource({
                 [SemanticResourceAttributes.SERVICE_NAME]: "cusomer-service",
             }),
+            textMapPropagator: new CompositePropagator({
+                propagators: [
+                  new W3CTraceContextPropagator()
+                ],
+              }),
             instrumentations: [getNodeAutoInstrumentations()],
         });
 

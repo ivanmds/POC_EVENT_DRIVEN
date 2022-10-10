@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using Confluent.Kafka;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -20,6 +21,7 @@ namespace Antifraud.Kafka
         public void Publish(string topicName, object message)
         {
             using var activity = _activitySource.StartActivity("KafkaProducer.Publish", ActivityKind.Internal);
+
             var config = new ProducerConfig
             {
                 BootstrapServers = kafkaConnection,
@@ -36,10 +38,16 @@ namespace Antifraud.Kafka
 
                 var json = JsonConvert.SerializeObject(message, jsonSerializerSettings);
 
-                var result = producer.ProduceAsync(topicName, new Message<Null, string> { Value = json }).Result;
+                var header = new Headers();
+                var traceId = activity.TraceId.ToString();
+                var spanId = activity.SpanId.ToString();
+                header.Add("trace_id", Encoding.ASCII.GetBytes(traceId));
+                header.Add("span_id", Encoding.ASCII.GetBytes(spanId));
+
+                var result = producer.ProduceAsync(topicName, new Message<Null, string> { Value = json, Headers = header }).Result;
                 if(result.Status != PersistenceStatus.Persisted)
                 {
-                    producer.ProduceAsync(topicName, new Message<Null, string> { Value = json }).Wait();
+                    producer.ProduceAsync(topicName, new Message<Null, string> { Value = json, Headers = header }).Wait();
                 }
             }
         }

@@ -24,12 +24,12 @@ namespace Backoffice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string customerUri = Environment.GetEnvironmentVariable("CUSTOMER_SERVICE_URI") ?? "http://localhost:3000";
+            string customerUri = Environment.GetEnvironmentVariable("CUSTOMER_SERVICE_URI") ?? "http://localhost:3001";
             services.AddHttpClient(CustomerClient.KEY, client => {
                 client.BaseAddress = new Uri(customerUri);
             });
 
-            string paymentUri = Environment.GetEnvironmentVariable("PAYMENT_SERVICE_URI") ?? "http://localhost:3002";
+            string paymentUri = Environment.GetEnvironmentVariable("PAYMENT_SERVICE_URI") ?? "http://payment.kube-test.acessobank-stg.com.br";
             services.AddHttpClient(TransactionClient.KEY, client => {
                 client.BaseAddress = new Uri(paymentUri);
             });
@@ -75,19 +75,17 @@ namespace Backoffice
             var serviceName = "Backoffice";
             var serviceVersion = "1.0.0";
 
-            string uri = Environment.GetEnvironmentVariable("COLLECTOR_URI") ?? "http://localhost:4318";
+            string uri = Environment.GetEnvironmentVariable("COLLECTOR_URI") ?? "http://localhost:4317";
 
             var isGrpcValue = Environment.GetEnvironmentVariable("IS_GRPC");
-            bool isGrpc = isGrpcValue == "YES" ? true : false;
+            bool isGrpc = true; // isGrpcValue == "YES" ? true : false;
 
             Console.WriteLine(uri);
             Console.WriteLine(isGrpc);
 
             services.AddOpenTelemetryMetrics(builder =>
             {
-                //builder.AddHttpClientInstrumentation();
-                //builder.AddAspNetCoreInstrumentation();
-                builder.AddMeter("Antifraud");
+                builder.AddMeter(serviceName);
                 builder.SetResourceBuilder(
                         ResourceBuilder.CreateDefault()
                             .AddService(serviceName: serviceName, serviceVersion: serviceVersion));
@@ -113,8 +111,10 @@ namespace Backoffice
                     .SetResourceBuilder(
                         ResourceBuilder.CreateDefault()
                             .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
-                    .AddHttpClientInstrumentation();
+                     .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation();
 
+                tracerProviderBuilder.AddConsoleExporter();
             });
         }
 

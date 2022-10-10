@@ -118,10 +118,10 @@ namespace Antifraud
 
         private  void StartOpenTelemetry(IServiceCollection services)
         {
-            string uri = Environment.GetEnvironmentVariable("COLLECTOR_URI") ?? "http://localhost:4318";
+            string uri = Environment.GetEnvironmentVariable("COLLECTOR_URI") ?? "http://localhost:4317";
 
             var isGrpcValue = Environment.GetEnvironmentVariable("IS_GRPC");
-            bool isGrpc = isGrpcValue == "YES" ? true : false;
+            bool isGrpc = true; //isGrpcValue == "YES" ? true : false;
 
             Console.WriteLine(uri);
             Console.WriteLine(isGrpc);
