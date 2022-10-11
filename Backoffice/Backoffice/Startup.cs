@@ -111,8 +111,7 @@ namespace Backoffice
                     .SetResourceBuilder(
                         ResourceBuilder.CreateDefault()
                             .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
-                     .AddHttpClientInstrumentation()
-                    .AddAspNetCoreInstrumentation();
+                    .AddHttpClientInstrumentation();
 
                 tracerProviderBuilder.AddConsoleExporter();
             });

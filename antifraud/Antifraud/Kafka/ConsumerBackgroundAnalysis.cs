@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -15,14 +16,16 @@ namespace Antifraud.Kafka
     {
         private IConsumer<string, string> _consumer;
         private readonly KafkaConsumerConfigAnalysis _config;
+        private readonly ILogger<ConsumerBackgroundAnalysis> _logger;
         private readonly IServiceProvider _services;
         private readonly KafkaDictConsumers _kafkaDictConsumers;
 
-        public ConsumerBackgroundAnalysis(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfigAnalysis config)
+        public ConsumerBackgroundAnalysis(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfigAnalysis config, ILogger<ConsumerBackgroundAnalysis> logger)
         {
             _services = services;
             _kafkaDictConsumers = kafkaDictConsumers;
             _config = config;
+            _logger = logger;
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
@@ -84,7 +87,7 @@ namespace Antifraud.Kafka
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex.Message, ex);
             }
         }
 

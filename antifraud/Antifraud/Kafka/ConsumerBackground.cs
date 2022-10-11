@@ -1,9 +1,10 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,11 +18,14 @@ namespace Antifraud.Kafka
         private readonly IServiceProvider _services;
         private readonly KafkaDictConsumers _kafkaDictConsumers;
 
-        public ConsumerBackground(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfig config)
+        private readonly ILogger<ConsumerBackground> _logger;
+
+        public ConsumerBackground(IServiceProvider services, KafkaDictConsumers kafkaDictConsumers, KafkaConsumerConfig config, ILogger<ConsumerBackground> logger)
         {
             _services = services;
             _kafkaDictConsumers = kafkaDictConsumers;
             _config = config;
+            _logger = logger;
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
@@ -53,6 +57,22 @@ namespace Antifraud.Kafka
                         var eventName = Encoding.Default.GetString(result.Message.Headers[0].GetValueBytes());
 
                         var msgBody = result.Message.Value;
+
+
+                        var spanIdBuffer = result.Message.Headers.FirstOrDefault(p => p.Key == "span_id")?.GetValueBytes();
+                        string spanId = null;
+                        if (spanIdBuffer != null)
+                        {
+                            spanId = Encoding.Default.GetString(spanIdBuffer);
+                        }
+
+                        var traceIdBuffer = result.Message.Headers.FirstOrDefault(p => p.Key == "trace_id")?.GetValueBytes();
+                        string traceId = null;
+                        if (spanIdBuffer != null)
+                        {
+                            traceId = Encoding.Default.GetString(traceIdBuffer);
+                        }
+
                         var types = _kafkaDictConsumers.GetConsumerType(eventName);
                         var consumer = scope.ServiceProvider.GetService(types.Consumer);
 
@@ -60,13 +80,13 @@ namespace Antifraud.Kafka
 
                         var methodConsume = types.Consumer.GetMethod("Consume");
                         
-                        methodConsume.Invoke(consumer, new[] { @event });
+                        methodConsume.Invoke(consumer, new[] { @event, spanId, traceId });
                     }
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex.Message, ex);
             }
         }
 
